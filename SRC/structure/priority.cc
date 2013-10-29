@@ -33,16 +33,14 @@ void priority::update(Object* o, const double& key)
 	heap(o->id());
 }
 
-void priority::pop()
+priority::value_type priority::pop()
 {
+	value_type result = container_type::front().second;
 	swap(0, size()-1);
 	container_type::pop_back();
 	heapDown(0);
+	return result;
 }
-
-
-
-
 
 
 

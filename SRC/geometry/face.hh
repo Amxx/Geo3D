@@ -20,7 +20,8 @@ class Face : public Object
 	private:
 		Vertex*											m_vertices[3];
 		Face*												m_faces[3];
-		priority										m_inside;
+		std::vector<Vertex*>				m_inside;
+		double											m_inside_key;
 		
 	
 	public:
@@ -28,22 +29,28 @@ class Face : public Object
 		Face(Vertex&, Vertex&, Vertex&);
 		Face(Vertex&, Vertex&, Vertex&, Face&, Face&, Face&);
 	
-		Vertex*					vertex		(int);
-		const Vertex*		vertex		(int)										const;
-		int							index			(const Vertex*)					const;
+		Vertex*								vertex		(int);
+		const Vertex*					vertex		(int)											const;
+		int										index			(const Vertex*)						const;
 	
-		Face*						face			(int);
-		const Face* 		face			(int)										const;
-		int 						index			(const Face*)						const;
+		Face*									face			(int);
+		const Face* 					face			(int)											const;
+		int 									index			(const Face*)							const;
 	
 	
-		double					aire			()											const;
-		bool						in				(const vec3&)						const;
-		bool						in_circle	(const vec3& pt)				const;
-		vec3						project		(const vec3&)						const;
+		double								aire			()												const;
+		bool									in				(const vec3&)							const;
+		bool									in_circle	(const vec3& pt)					const;
+		vec3									project		(const vec3&)							const;
+		void 									check			()												const;
 	
-		double					key				()											const;
-		void 						check			()											const;
+	
+		void									insert		(Vertex*, const double&);
+		std::vector<Vertex*>	extract		();
+		double&								key				();
+		const double&					key				()												const;
+		
+		
 };
 
 #endif

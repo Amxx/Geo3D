@@ -33,11 +33,11 @@ class priority : private std::vector<std::pair<double, Object*>>
 		const value_type&	top() const;
 		key_type&					top_key();
 		const key_type&		top_key() const;
-	
+		
 		void							push(Object*, const double&);
 		void							update(Object*, const double&);
-		void							pop();
-	
+		value_type				pop();
+		
 	private:
 		void							swap(int, int);
 		void							heap(int);

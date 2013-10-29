@@ -26,13 +26,14 @@ Triangulation::Triangulation(int nb, const Generator& generator)
 	
 	for (int i=4; i<nb; ++i)
 	{
-		m_vertices.push_back(new Vertex(generator()));
-		if 			(f0->in(*m_vertices.back()))
-			f0->m_inside.push(m_vertices.back(), fabs(m_vertices.back()->y()));
-		else if	(f1->in(*m_vertices.back()))
-			f1->m_inside.push(m_vertices.back(), fabs(m_vertices.back()->y()));
+		Vertex* pt = new Vertex(generator());
+		if 			(f0->in(*pt))
+			f0->insert(pt, fabs(pt->y()));
+		else if	(f1->in(*pt))
+			f1->insert(pt, fabs(pt->y()));
 		else
 			assert(false);
+		m_vertices.push_back(pt);
 	}
 	
 }
@@ -59,18 +60,12 @@ Triangulation::~Triangulation()
 void Triangulation::triangulate()
 {
 	m_priority.clear();
-	m_step = 0;
 	
 	for (Face* face : m_faces)
 		m_priority.push(face, face->key());
 	
 	while (m_priority.top_key() > 0.01)
-	{
-		Face* face0 = static_cast<Face*> (m_priority.top());
-		m_priority.pop();
-		divide(face0);
-		m_step++;
-	}
+		divide(static_cast<Face*> (m_priority.pop()));
 	
 }
 
@@ -85,9 +80,11 @@ void Triangulation::divide(Face* face0)
 {
 	assert(face0);
 		
-	Vertex*		center =	static_cast<Vertex*>	(face0->m_inside.top());	face0->m_inside.pop();		assert(center);
-	priority	inside =	face0->m_inside;
-
+	Vertex*		center =	face0->m_inside.front();
+	std::swap(face0->m_inside.front(), face0->m_inside.back());
+	face0->m_inside.pop_back();
+	assert(center);
+	
 	Vertex 		*v0 = face0->vertex(0);				
 	Vertex		*v1 = face0->vertex(1);				
 	Vertex 		*v2 = face0->vertex(2);
@@ -108,17 +105,15 @@ void Triangulation::divide(Face* face0)
 	if (f1) f1->m_faces[f1->index(face0)] = face1;
 	if (f2) f2->m_faces[f2->index(face0)] = face2;
 	
-	
-	face0->m_inside.clear();
-	for (auto& it : inside)
+	std::vector<Vertex*> inside = face0->extract();
+	for (Vertex* pt : inside)
 	{
-		Vertex* pt = static_cast<Vertex*>(it.second);
 		if 				(center->orientation(*pt, *v2) != NEGATIVE && center->orientation(*pt, *v1) != POSITIVE)
-			face0->m_inside.push(pt, fabs(pt->y() - face0->project(*pt).y()));
+			face0->insert(pt, fabs(pt->y() - face0->project(*pt).y()));
 		else if 	(center->orientation(*pt, *v0) != NEGATIVE && center->orientation(*pt, *v2) != POSITIVE)
-			face1->m_inside.push(pt, fabs(pt->y() - face1->project(*pt).y()));
+			face1->insert(pt, fabs(pt->y() - face1->project(*pt).y()));
 		else if 	(center->orientation(*pt, *v1) != NEGATIVE && center->orientation(*pt, *v0) != POSITIVE)
-			face2->m_inside.push(pt, fabs(pt->y() - face2->project(*pt).y()));
+			face2->insert(pt, fabs(pt->y() - face2->project(*pt).y()));
 		else
 			assert(false);
 		
@@ -145,10 +140,11 @@ void Triangulation::divide(Face* face0)
 	}
 }
 
-bool Triangulation::delaunay(Face* f)
+
+
+
+void Triangulation::delaunay(Face* f)
 {
-	if (f->stamp() == m_step)	return false;
-		
 	Face*					g;
 	Vertex* 			v_f;
 	Vertex* 			v_g;
@@ -158,8 +154,7 @@ bool Triangulation::delaunay(Face* f)
 	for (i_f=0; i_f<3; ++i_f)
 	{
 		g =	f->face(i_f);
-		if (g == nullptr)					continue;
-		
+		if (g == nullptr)																								continue;
 		i_g =	g->index(f);
 		v_f = f->vertex(i_f);
 		v_g = g->vertex(i_g);
@@ -167,13 +162,11 @@ bool Triangulation::delaunay(Face* f)
 		if (v_g->orientation(*g->vertex((i_g+1)%3), *v_f) != POSITIVE)	continue;
 		if (!f->in_circle(*v_g) && !g->in_circle(*v_f))									continue;
 		
-		f->stamp() = m_step;
 		bascule(f, g);
 		m_queue.push(g);
 		
-		return true;
+		return;
 	}
-	return false;
 }
 
 
@@ -194,26 +187,24 @@ void Triangulation::bascule(Face* f, Face* g)
 	
 	if (f->face(i_f)) f->face(i_f)->m_faces[f->face(i_f)->index(g)] = f;
 	if (g->face(i_g)) g->face(i_g)->m_faces[g->face(i_g)->index(f)] = g;
-		
-	priority inside_f = f->m_inside; f->m_inside.clear();
-	priority inside_g = g->m_inside; g->m_inside.clear();		
-	for (auto& it : inside_f)
+	
+	std::vector<Vertex*> inside_f = f->extract();
+	std::vector<Vertex*> inside_g = g->extract();
+	for (Vertex* pt : inside_f)
 	{
-		Vertex* pt = static_cast<Vertex*>(it.second);
 		if (f->in(*pt))
-			f->m_inside.push(pt, fabs(pt->y() - f->project(*pt).y()));
+			f->insert(pt, fabs(pt->y() - f->project(*pt).y()));
 		else if (g->in(*pt))
-			g->m_inside.push(pt, fabs(pt->y() - g->project(*pt).y()));
+			g->insert(pt, fabs(pt->y() - g->project(*pt).y()));
 		else
 			assert(false);
 	}
-	for (auto& it : inside_g)
+	for (Vertex* pt : inside_g)
 	{
-		Vertex* pt = static_cast<Vertex*>(it.second);
 		if (f->in(*pt))
-			f->m_inside.push(pt, fabs(pt->y() - f->project(*pt).y()));
+			f->insert(pt, fabs(pt->y() - f->project(*pt).y()));
 		else if (g->in(*pt))
-			g->m_inside.push(pt, fabs(pt->y() - g->project(*pt).y()));
+			g->insert(pt, fabs(pt->y() - g->project(*pt).y()));
 		else
 			assert(false);
 	}

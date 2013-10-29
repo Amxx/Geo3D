@@ -23,11 +23,9 @@ class Triangulation
 	public:
 		std::vector<Vertex*>	m_vertices;
 		std::vector<Face*>		m_faces;
+		std::queue<Face*> 		m_queue;	
+		
 		priority							m_priority;
-	
-		std::queue<Face*> 		m_queue;
-		int										m_step;
-	
 	
 	public:
 		Triangulation(int, const Generator& generator = Random());
@@ -38,7 +36,7 @@ class Triangulation
 	
 	private:
 		void divide(Face*);
-		bool delaunay(Face*);
+		void delaunay(Face*);
 		void bascule(Face* f, Face* g);
 	
 };

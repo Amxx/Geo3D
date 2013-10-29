@@ -8,6 +8,7 @@ Face::Face()
 	m_faces[0] = 		nullptr;
 	m_faces[1] = 		nullptr;
 	m_faces[2] = 		nullptr;
+	m_inside_key =	0.;
 }
 Face::Face(Vertex& v1, Vertex& v2, Vertex& v3)
 {
@@ -17,6 +18,7 @@ Face::Face(Vertex& v1, Vertex& v2, Vertex& v3)
 	m_faces[0] = 		nullptr;
 	m_faces[1] = 		nullptr;
 	m_faces[2] = 		nullptr;
+	m_inside_key =	0.;
 	
 	assert(aire() >= 0);
 }
@@ -28,6 +30,7 @@ Face::Face(Vertex& v1, Vertex& v2, Vertex& v3, Face& f1, Face& f2, Face& f3)
 	m_faces[0] = 		&f1;
 	m_faces[1] = 		&f2;
 	m_faces[2] = 		&f3;
+	m_inside_key =	0.;
 	
 	assert(aire() >= 0);
 }
@@ -113,12 +116,8 @@ vec3 Face::project(const vec3& pt) const
 					+ Ac*(*vertex(2)) ) / At;
 }
 
-double Face::key() const
-{
-	if (m_inside.empty())
-		return 0.;
-	return m_inside.top_key();
-}
+
+
 
 void Face::check() const
 {
@@ -132,3 +131,34 @@ void Face::check() const
 	}
 }
 
+
+
+
+
+
+void Face::insert(Vertex* pt, const double& key)
+{
+	m_inside.push_back(pt);
+	if (m_inside_key < key)
+	{
+		std::swap(m_inside.front(), m_inside.back());
+		m_inside_key = key;
+	}
+}
+
+std::vector<Vertex*> Face::extract()
+{
+	std::vector<Vertex*> result;	
+	result.swap(m_inside);
+	m_inside_key = 0;	
+	return result;
+}
+
+double& Face::key()
+{
+	return m_inside_key;
+}
+const double& Face::key() const
+{
+	return m_inside_key;
+}

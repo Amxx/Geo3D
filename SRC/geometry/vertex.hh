@@ -4,7 +4,7 @@
 #include "../structure/object.hh"
 #include "../structure/vec3.hh"
 
-class Vertex : public Object, public vec3
+class Vertex : public vec3
 {
 	public:
 		Vertex();
