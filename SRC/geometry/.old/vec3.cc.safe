@@ -1,0 +1,47 @@
+#include "vec3.hh"
+
+vec3::vec3()
+{
+}
+vec3::vec3(const double& x, const double& y, const double& z)
+{
+	value[0] = x;
+	value[1] = y;
+	value[2] = z;
+}
+vec3::vec3(const vec3& cpy)
+{
+	value[0] = cpy.value[0];
+	value[1] = cpy.value[1];
+	value[2] = cpy.value[2];
+}
+
+
+
+double& vec3::x() { return value[0]; }
+double& vec3::y() { return value[1]; }
+double& vec3::z() { return value[2]; }
+const double& vec3::x() const { return value[0]; }
+const double& vec3::y() const { return value[1]; }
+const double& vec3::z() const { return value[2]; }
+
+
+
+double vec3::aire(const vec3& pt1, const vec3& pt2) const
+{
+	return  ( (pt1.value[0]-this->value[0]) * (pt2.value[1]-this->value[1]) 		\
+					 -(pt1.value[1]-this->value[1]) * (pt2.value[0]-this->value[0]) ) / 2;
+}
+
+sens vec3::orientation(const vec3& pt1, const vec3& pt2) const
+{
+	double a = this->aire(pt1, pt2);
+	sens	o;
+	if (a>0)
+		o = POSITIVE;
+	else if (a<0)
+		o = NEGATIVE;
+	else
+		o = ALIGNED;
+	return o;
+}
