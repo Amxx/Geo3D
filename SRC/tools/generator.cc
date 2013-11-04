@@ -1,5 +1,6 @@
 #include "generator.hh"
 
+using namespace Generator;
 
 vec3 Random::base	(int idx)	const
 {
@@ -69,6 +70,8 @@ vec3 HeightMap::operator() () const
 {
 	double x = (double) rand()/(double)RAND_MAX;
 	double z = (double) rand()/(double)RAND_MAX;
-	double y = (double) m_map.at<unsigned char>( (int) (z * m_map.rows),  (int) (x * m_map.cols)) / m_height;
-	return vec3(m_scale * x, y, m_ratio * m_scale * z);
+	double y = (double) m_map.at<unsigned char>( (int) (z * m_map.rows),  (int) (x * m_map.cols));
+	return vec3(	x*m_scale,
+								y/m_height,
+								z*m_scale*m_ratio);
 }

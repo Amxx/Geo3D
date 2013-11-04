@@ -5,10 +5,11 @@
 #include <GL/glut.h>
 
 #include "geometry/triangulation.hh"
+#include "tools/palette.hh"
 
 
 void Init(int& argc, char* argv[], int width = 800, int height = 600);
-void SetMesh(Triangulation*);
+void SetMesh(const Triangulation&, const Palette::Palette& tone = Palette::BW(), vec3 = vec3());
 
 void Display();
 void Resize(int width, int height);

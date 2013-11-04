@@ -9,6 +9,7 @@
 #include "viewer.hh"
 #include "geometry/triangulation.hh"
 #include "tools/generator.hh"
+#include "tools/palette.hh"
 
 
 
@@ -24,17 +25,17 @@ int main(int argc, char* argv[])
 	
 	
 	
-	int					size = 1000000;
-	std::string	path = "";
+	int						size =		1000000;
+	std::string		path =		"";
+	bool					color =		false;
 	
-	// gen	= new HeightMap("DATA/Srtm_ramp2.world.21600x10800.jpg", 10.);
-	// gen	=	new HeightMap("DATA/uk.png", 10.);
-	// gen	=	new HeightMap("DATA/ireland.png", 10.);
-	// gen	=	new HeightMap("DATA/BW_DTED_small.png", 10.);
+
 	
 	for (int i = 1; i<argc; ++i)	
 	{
-		if (i+1 < argc && !strcmp(argv[i], "-n"))
+		if (i < argc && !strcmp(argv[i], "-truecolors"))
+			color = true;
+		else if (i+1 < argc && !strcmp(argv[i], "-n"))
 			size = atoi(argv[++i]);
 		else if (i+1 < argc && !strcmp(argv[i], "-path"))
 			path = argv[++i];
@@ -43,15 +44,31 @@ int main(int argc, char* argv[])
 	}
 	
 	
-	Generator* gen;
-	if (path.empty())	gen = new Sinus(10.);
-	else							gen = new HeightMap(path, 10.);
+	
+	
+	
+	
+	Generator::Generator* gen;
+	if (path.empty())	gen =		new Generator::Sinus(10.);
+	else							gen =		new Generator::HeightMap(path, 10.);
+	
+	Palette::Palette* tone;
+	if (color)				tone =	new Palette::Color();
+	else							tone =	new Palette::BW();
+	
+	vec3 camera = 	.5 * gen->base(3); 
+	
+	
+	
+	
+	
 	
 	
 	
 	gettimeofday(&t, NULL);
 	timebegin = t.tv_sec + (t.tv_usec/1000000.0);
 	printf("Computing points ... ");
+	fflush(stdout);
 	
 	Triangulation* mesh = new Triangulation(size, *gen);
 	
@@ -61,10 +78,10 @@ int main(int argc, char* argv[])
 
 	delete gen;
 	
-	
 	gettimeofday(&t, NULL);
 	timebegin = t.tv_sec + (t.tv_usec/1000000.0);
 	printf("Computing triangulation ... ");
+	fflush(stdout);
 	
 	mesh->triangulate();
 	
@@ -75,12 +92,11 @@ int main(int argc, char* argv[])
 	
 	
 	
-
 	Init(argc, argv, 1600, 900);
-	SetMesh(mesh);
+	SetMesh(*mesh, *tone, camera);
 	
 	delete mesh;
-  
+
 	glutMainLoop();
 
 

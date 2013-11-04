@@ -28,7 +28,7 @@ class Triangulation
 		priority							m_priority;
 	
 	public:
-		Triangulation(int, const Generator& generator = Random());
+		Triangulation(int, const Generator::Generator& generator = Generator::Random());
 		Triangulation(std::vector<vec3>&);
 		~Triangulation();
 	

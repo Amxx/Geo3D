@@ -146,12 +146,10 @@ void Face::insert(Vertex* pt, const double& key)
 	}
 }
 
-std::vector<Vertex*> Face::extract()
+void Face::swap(std::vector<Vertex*>& v)
 {
-	std::vector<Vertex*> result;	
-	result.swap(m_inside);
+	v.swap(m_inside);
 	m_inside_key = 0;	
-	return result;
 }
 
 double& Face::key()

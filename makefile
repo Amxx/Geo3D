@@ -2,13 +2,11 @@ CC =			g++
 CFLAGS =	-g -Wall -std=c++11 -O3
 LFLAGS =	-lglut -lGL -lGLU -lm -lopencv_core -lopencv_highgui
 
-
 HEA = $(shell find SRC/ -name *.hh -o -name *.hpp)
 SRC = $(shell find SRC/ -name '*.cc')
 OBJ = $(patsubst SRC/%.cc, OBJS/%.o, $(SRC))
 
-
-EXEC = GeoAlps
+EXEC = Geo3D
 
 
 
@@ -19,10 +17,10 @@ all: build
 
 build: $(OBJ)
 	$(CC) $(LFLAGS) -o OBJS/$(EXEC) $^
-	ln -s -f OBJS/GeoAlps .
+	ln -s -f OBJS/$(EXEC) .
 
 
-$(OBJ): OBJS/%.o : SRC/%.cc $(HEA)
+$(OBJ): OBJS/%.o : SRC/%.cc $(HEA) makefile
 	$(CC) $(CFLAGS) -c $< -o $@
 
 

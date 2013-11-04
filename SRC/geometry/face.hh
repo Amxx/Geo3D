@@ -46,7 +46,7 @@ class Face : public Object
 	
 	
 		void									insert		(Vertex*, const double&);
-		std::vector<Vertex*>	extract		();
+		void									swap			(std::vector<Vertex*>&);
 		double&								key				();
 		const double&					key				()												const;
 		

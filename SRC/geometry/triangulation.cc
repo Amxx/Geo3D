@@ -3,7 +3,7 @@
 
 #include <cstdio>
 
-Triangulation::Triangulation(int nb, const Generator& generator)
+Triangulation::Triangulation(int nb, const Generator::Generator& generator)
 {
 	Vertex* v0 = new Vertex(generator.base(0));
 	Vertex* v1 = new Vertex(generator.base(1));
@@ -105,7 +105,8 @@ void Triangulation::divide(Face* face0)
 	if (f1) f1->m_faces[f1->index(face0)] = face1;
 	if (f2) f2->m_faces[f2->index(face0)] = face2;
 	
-	std::vector<Vertex*> inside = face0->extract();
+	std::vector<Vertex*> inside;
+	face0->swap(inside);
 	for (Vertex* pt : inside)
 	{
 		if 				(center->orientation(*pt, *v2) != NEGATIVE && center->orientation(*pt, *v1) != POSITIVE)
@@ -126,8 +127,6 @@ void Triangulation::divide(Face* face0)
 	m_priority.push(face1, face1->key());
 	m_priority.push(face2, face2->key());
 	
-	assert(m_queue.empty());
-	
 	m_queue.push(face0);
 	m_queue.push(face1);
 	m_queue.push(face2);
@@ -138,6 +137,7 @@ void Triangulation::divide(Face* face0)
 		m_queue.pop();
 		delaunay(c);
 	}
+	
 }
 
 
@@ -188,8 +188,10 @@ void Triangulation::bascule(Face* f, Face* g)
 	if (f->face(i_f)) f->face(i_f)->m_faces[f->face(i_f)->index(g)] = f;
 	if (g->face(i_g)) g->face(i_g)->m_faces[g->face(i_g)->index(f)] = g;
 	
-	std::vector<Vertex*> inside_f = f->extract();
-	std::vector<Vertex*> inside_g = g->extract();
+	std::vector<Vertex*> inside_f;
+	std::vector<Vertex*> inside_g;
+	f->swap(inside_f);
+	g->swap(inside_g);
 	for (Vertex* pt : inside_f)
 	{
 		if (f->in(*pt))

@@ -1,7 +1,7 @@
 #include "viewer.hh"
 
-static vec3			camera_position =				vec3(0., 2., 5.);
-static double 	camera_orientation_x =	40.;
+static vec3			camera_position;
+static double 	camera_orientation_x =	60.;
 static double 	camera_orientation_y =	0.;
 
 static int			mouse_status = 					0;
@@ -12,9 +12,7 @@ static GLuint		points;
 static GLuint		maillage2D;
 static GLuint		maillage3D;
 static GLuint		surface;
-static int			display_points =				0;
-static int			display_maillage =			0;
-static int			display_surface =				1;
+static int			display =								0x00000001;
 
 
 
@@ -27,11 +25,16 @@ static vec3 inCamera(const vec3& p)
 	return p.rotateY(thetaY);
 }
 
+static void check_camera()
+{
+	if (camera_orientation_x > +90) camera_orientation_x = +90;
+	if (camera_orientation_x < -90) camera_orientation_x = -90;
+}
 
-inline void glColorVec3(const double& g)	{ glColor3f(g, g, g); }
-//inline void glColorVec3(const double& g)	{ glColor3f(.8*g, .8*g, 3.2*g); }
-inline void glVertexVec3D(const vec3* v)	{	glVertex3d(v->x(), .1*v->y(), v->z()); }
-inline void glVertexVec2D(const vec3* v)	{	glVertex3d(v->x(), 0., v->z()); }
+inline void glColorVec3(const vec3& v)			{	glColor3f(v.x(),	v.y(),			v.z());			}
+inline void glVertexVec3D(const vec3& v)		{	glVertex3d(v.x(), 0.2* v.y(),	v.z());			}
+inline void glVertexVec2D(const vec3& v)		{	glVertex3d(v.x(), 0., 				v.z());			}
+
 
 
 
@@ -45,7 +48,7 @@ void Init(int& argc, char* argv[], int width, int height)
 
 	glutInitWindowSize(width, height);  
 	glutInitWindowPosition(50, 50);  
-	glutCreateWindow("GeoAlps");
+	glutCreateWindow("Geo3D - By Hadrien Croubois");
 	
 	glutDisplayFunc(Display);
 	glutReshapeFunc(Resize);
@@ -66,40 +69,42 @@ void Init(int& argc, char* argv[], int width, int height)
 }
 
 
-void SetMesh(Triangulation* mesh)
+void SetMesh(const Triangulation& mesh, const Palette::Palette& tone, vec3 c)
 {	
+	camera_position = vec3(0., 2., 1.) + c;
+	
 	surface = glGenLists(1);
 	glNewList(surface, GL_COMPILE);
 	glBegin(GL_TRIANGLES);
-	for (Face* face : mesh->m_faces)
+	for (Face* face : mesh.m_faces)
 	{
-		glColorVec3(face->vertex(0)->y());	glVertexVec3D(face->vertex(0));
-		glColorVec3(face->vertex(1)->y());	glVertexVec3D(face->vertex(1));
-		glColorVec3(face->vertex(2)->y());	glVertexVec3D(face->vertex(2));
+		glColorVec3(tone(face->vertex(0)->y()));	glVertexVec3D(*face->vertex(0));
+		glColorVec3(tone(face->vertex(1)->y()));	glVertexVec3D(*face->vertex(1));
+		glColorVec3(tone(face->vertex(2)->y()));	glVertexVec3D(*face->vertex(2));
 	}
 	glEnd();
 	glEndList();
 	
 	maillage2D = glGenLists(1);
 	glNewList(maillage2D, GL_COMPILE);
-	for (Face* face : mesh->m_faces)
+	for (Face* face : mesh.m_faces)
 	{
 		glBegin(GL_LINE_LOOP);
-		glColorVec3(face->vertex(0)->y());	glVertexVec2D(face->vertex(0));
-		glColorVec3(face->vertex(1)->y());	glVertexVec2D(face->vertex(1));
-		glColorVec3(face->vertex(2)->y());	glVertexVec2D(face->vertex(2));
+		glColorVec3(tone(face->vertex(0)->y()));	glVertexVec2D(*face->vertex(0));
+		glColorVec3(tone(face->vertex(1)->y()));	glVertexVec2D(*face->vertex(1));
+		glColorVec3(tone(face->vertex(2)->y()));	glVertexVec2D(*face->vertex(2));
 		glEnd();
 	}
   glEndList();
 
 	maillage3D = glGenLists(1);
 	glNewList(maillage3D, GL_COMPILE);
-	for (Face* face : mesh->m_faces)
+	for (Face* face : mesh.m_faces)
 	{
 		glBegin(GL_LINE_LOOP);
-		glColorVec3(face->vertex(0)->y());	glVertexVec3D(face->vertex(0));
-		glColorVec3(face->vertex(1)->y());	glVertexVec3D(face->vertex(1));
-		glColorVec3(face->vertex(2)->y());	glVertexVec3D(face->vertex(2));
+		glColorVec3(tone(face->vertex(0)->y()));	glVertexVec3D(*face->vertex(0));
+		glColorVec3(tone(face->vertex(1)->y()));	glVertexVec3D(*face->vertex(1));
+		glColorVec3(tone(face->vertex(2)->y()));	glVertexVec3D(*face->vertex(2));
 		glEnd();
 	}
   glEndList();
@@ -107,10 +112,10 @@ void SetMesh(Triangulation* mesh)
 	points = glGenLists(1);
 	glNewList(points, GL_COMPILE);
 	glBegin(GL_POINTS);
-	for (Vertex* vertex : mesh->m_vertices)
+	for (Vertex* vertex : mesh.m_vertices)
 	{
-		glColorVec3(vertex->y());
-		glVertexVec3D(vertex);
+		glColorVec3(tone(vertex->y()));
+		glVertexVec3D(*vertex);
 	}
   glEnd();
   glEndList();
@@ -127,10 +132,10 @@ void Display()
 	glRotatef(camera_orientation_y, 0.0, 1.0, 0.0);
 	glTranslatef(-camera_position.x(), -camera_position.y(), -camera_position.z());
 	
-	if (display_points   == 1)	glCallList(points);
-	if (display_maillage == 1)	glCallList(maillage2D);
-	if (display_maillage == 2)	glCallList(maillage3D);
-	if (display_surface  == 1)	glCallList(surface);
+	if (display & 0x00000001)	glCallList(surface);
+	if (display & 0x00000002)	glCallList(points);
+	if (display & 0x00000004)	glCallList(maillage2D);
+	if (display & 0x00000008)	glCallList(maillage3D);
 	
 	glutSwapBuffers();
 }
@@ -156,7 +161,8 @@ void Keyboard(unsigned char key, int x, int y)
 		case 'r': camera_position += inCamera(vec3(0.0, 0.1, 0.0)); break;
 		case 'z': camera_position -= inCamera(vec3(0.0, 0.0, 0.1)); break;
 		case 's': camera_position += inCamera(vec3(0.0, 0.0, 0.1)); break;
-		default: printf("-- unmapped key : %d\n", key); break;
+		// default: printf("-- unmapped key : %d\n", key); break;
+		default: break;
 	}
 	glutPostRedisplay();
 }
@@ -165,14 +171,15 @@ void Special(int key, int x, int y)
 {
 	switch(key)
 	{
-		case GLUT_KEY_F1:			display_surface =  (display_surface  + 1) % 2;	break;
-		case GLUT_KEY_F2:			display_maillage = (display_maillage + 1) % 3;	break;
-		case GLUT_KEY_F3:			display_points =   (display_points   + 1) % 2;	break;
+		case GLUT_KEY_F1:			display = display xor 0x00000001;						break;
+		case GLUT_KEY_F2:			display = display xor 0x00000002;						break;
+		case GLUT_KEY_F3:			display = display xor 0x00000004;						break;
+		case GLUT_KEY_F4:			display = display xor 0x00000008;						break;
 		
-		case GLUT_KEY_LEFT:		camera_orientation_y -= 1;											break;
-		case GLUT_KEY_RIGHT:	camera_orientation_y += 1;											break;
-		case GLUT_KEY_DOWN:		camera_orientation_x -= 1;											break;
-		case GLUT_KEY_UP:			camera_orientation_x += 1;											break;
+		case GLUT_KEY_LEFT:		camera_orientation_y -= 1; 									break;
+		case GLUT_KEY_RIGHT:	camera_orientation_y += 1; 									break;
+		case GLUT_KEY_DOWN:		camera_orientation_x -= 1; check_camera();	break;
+		case GLUT_KEY_UP:			camera_orientation_x += 1; check_camera();	break;
 		default: break;
 	}
 	glutPostRedisplay();
@@ -191,11 +198,16 @@ void MouseMove(int x, int y)
 	{
 		camera_orientation_y += 0.1 * (mouse_x-x);
 		camera_orientation_x += 0.1 * (mouse_y-y);
+		check_camera();
 		mouse_x = x;
 		mouse_y = y;
 		glutPostRedisplay();
 	}
 }
+
+
+
+
 
 
 
