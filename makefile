@@ -3,13 +3,30 @@ CFLAGS =	-g -Wall -O3
 LFLAGS =	-lglut -lGL -lGLU -lm
 
 
-GCC_VERSION_GE_47 = $(shell g++ -dumpversion | gawk '{print $$1>=4.7?"1":"0"}')
-ifeq ($(GCC_VERSION_GE_47),1)
-	CFLAGS +=-std=c++11 -DCPP11
-endif
+# GCC_VERSION_GE_47 = $(shell g++ -dumpversion | gawk '{print $$1>=4.7?"1":"0"}')
+# ifeq ($(GCC_VERSION_GE_47),1)
+# 	CFLAGS +=-std=c++11 -DCPP11
+# endif
+# CFLAGS = -DOPENCV
+# LFLAGS = -lopencv_core -lopencv_highgui
 
-#CFLAGS = -DOPENCV
-#LFLAGS = -lopencv_core -lopencv_highgui
+
+# ============ MAC OS ===========================================================
+ifneq ($(strip $(shell $(CC) -v 2>&1 | grep -i "Apple")),)
+ GL_INCLUDE =   -I/usr/X11/include
+# GL_LDLIBS =    -lglut -lGL -lm -lobjc
+ GL_LDLIBDIR =  -L. -L/usr/X11/lib -L"/System/Library/Frameworks/OpenGL.framework/     Libraries" -framework GLUT -framework OpenGL
+endif
+# ============ LINUX ============================================================
+ifneq ($(strip $(shell $(CC) -v 2>&1 | grep -i "Linux")),)
+ GL_INCLUDE =   -I. -I/usr/include
+# GL_LDLIBS =    -lglut -lGL -lGLU -lm
+ GL_LDLIBDIR =
+endif
+# ===============================================================================
+
+
+
 
 
 
@@ -26,12 +43,12 @@ EXEC = Geo3D
 all: build
 	
 build: $(OBJ)
-	$(CC) $(LFLAGS) -o OBJS/$(EXEC) $^
+	$(CC) $(LFLAGS) -o OBJS/$(EXEC) $^ $(GL_LIBDIRS)
 	ln -s -f OBJS/$(EXEC) .
 
 
 $(OBJ): OBJS/%.o : SRC/%.cc $(HEA) makefile
-	$(CC) $(CFLAGS) -c $< -o $@
+	$(CC) $(CFLAGS) -c $< -o $@ $(GL_INCLUDE)
 
 
 clean:
