@@ -24,7 +24,7 @@ namespace Palette
 		public:
 			vec3 operator() (double& h) const;
 		private:
-			static vec3 colors[20];
+			static vec3 colors[21];
 	};
 }
 

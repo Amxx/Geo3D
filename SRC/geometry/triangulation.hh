@@ -17,6 +17,8 @@
 #include "../structure/vec3.hh"
 
 
+#include "../tools/condition.hh"
+
 class Triangulation
 {
 	
@@ -32,7 +34,7 @@ class Triangulation
 		Triangulation(std::vector<vec3>&);
 		~Triangulation();
 	
-		void triangulate();
+		void triangulate(const Condition::Condition&);
 	
 	private:
 		void divide(Face*);

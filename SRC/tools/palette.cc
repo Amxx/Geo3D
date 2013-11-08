@@ -2,7 +2,7 @@
 
 using namespace Palette;
 
-vec3 Color::colors[20] = {	vec3(121, 178, 222),
+vec3 Color::colors[21] = {	vec3(121, 178, 222),
 														vec3(172, 208, 165),
 														vec3(148, 191, 139),
 														vec3(168, 198, 143),
@@ -21,7 +21,8 @@ vec3 Color::colors[20] = {	vec3(121, 178, 222),
 														vec3(186, 174, 154),
 														vec3(202, 195, 184),
 														vec3(224, 222, 216),
-														vec3(245, 244, 242)		};
+														vec3(245, 244, 242),
+														vec3(255, 255, 255)		};
 				
 vec3 BW::operator() (double& h) const
 {

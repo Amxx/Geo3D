@@ -57,14 +57,14 @@ Triangulation::~Triangulation()
 
 
 
-void Triangulation::triangulate()
+void Triangulation::triangulate(const Condition::Condition& condition)
 {
 	m_priority.clear();
 	
 	for (Face* face : m_faces)
 		m_priority.push(face, face->key());
 	
-	while (m_priority.top_key() > 0.01)
+	while (condition.loop(m_priority))
 		divide(static_cast<Face*> (m_priority.pop()));
 	
 }

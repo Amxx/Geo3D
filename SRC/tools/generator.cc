@@ -11,9 +11,9 @@ vec3 Random::base	(int idx)	const
 }
 vec3 Random::operator() () const
 {
-	double x = (double) rand()/(double)RAND_MAX;
-	double y = (double) rand()/(double)RAND_MAX;
-	double z = (double) rand()/(double)RAND_MAX;
+	double x = drand48();
+	double y = drand48();
+	double z = drand48();
 	return vec3(x, y, z);
 }
 
@@ -32,8 +32,8 @@ vec3 Sinus::base (int idx) const
 }
 vec3 Sinus::operator() () const
 {
-	double x = (double) rand()/(double)RAND_MAX;
-	double z = (double) rand()/(double)RAND_MAX;
+	double x = drand48();
+	double z = drand48();
 	double y = .5*(1.+sin(m_f*(x+z)));
 	return vec3(x, y, z);
 }
@@ -68,8 +68,8 @@ vec3 HeightMap::base (int idx) const
 }
 vec3 HeightMap::operator() () const
 {
-	double x = (double) rand()/(double)RAND_MAX;
-	double z = (double) rand()/(double)RAND_MAX;
+	double x = drand48();
+	double z = drand48();
 	double y = (double) m_map.at<unsigned char>( (int) (z * m_map.rows),  (int) (x * m_map.cols));
 	return vec3(	x*m_scale,
 								y/m_height,
