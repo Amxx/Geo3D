@@ -1,12 +1,16 @@
 CC =			g++
 CFLAGS =	-g -Wall -O3
-LFLAGS =	-lglut -lGL -lGLU -lm -lopencv_core -lopencv_highgui
+LFLAGS =	-lglut -lGL -lGLU -lm
 
 
 GCC_VERSION_GE_47 = $(shell g++ -dumpversion | gawk '{print $$1>=4.7?"1":"0"}')
 ifeq ($(GCC_VERSION_GE_47),1)
 	CFLAGS +=-std=c++11 -DCPP11
 endif
+
+#CFLAGS = -DOPENCV
+#LFLAGS = -lopencv_core -lopencv_highgui
+
 
 
 HEA = $(shell find SRC/ -name *.hh -o -name *.hpp)

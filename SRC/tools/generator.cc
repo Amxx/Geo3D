@@ -40,7 +40,7 @@ vec3 Sinus::operator() () const
 
 
 
-
+#ifdef OPENCV
 HeightMap::HeightMap(const std::string& filename, const double& scale) :
 	m_map(cv::imread(filename, CV_LOAD_IMAGE_GRAYSCALE)),
 	m_ratio((double) m_map.rows / m_map.cols),
@@ -75,3 +75,4 @@ vec3 HeightMap::operator() () const
 								y/m_height,
 								z*m_scale*m_ratio);
 }
+#endif

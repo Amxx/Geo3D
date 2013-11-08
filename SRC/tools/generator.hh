@@ -3,12 +3,14 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-
 #include <string>
+#include "../structure/vec3.hh"
+
+#ifdef OPENCV
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
+#endif
 
-#include "../structure/vec3.hh"
 
 
 namespace Generator
@@ -37,7 +39,7 @@ namespace Generator
 			vec3 base				(int)	const;
 			vec3 operator() ()		const;
 	};
-
+	#ifdef OPENCV
 	class HeightMap : public Generator
 	{
 			cv::Mat 			m_map;
@@ -51,6 +53,7 @@ namespace Generator
 			vec3 base				(int)	const;
 			vec3 operator() ()		const;	
 	};
+	#endif
 }
 
 #endif

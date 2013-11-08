@@ -1,6 +1,7 @@
 #include <iostream>
 #include <cstdio>
 
+#include <string.h>
 #include <time.h>
 #include <sys/time.h>
 
@@ -69,8 +70,13 @@ int main(int argc, char* argv[])
 	
 	
 	Generator::Generator* gen;
+	#ifdef OPENCV
 	if (path.empty())	gen		= new Generator::Sinus(10.);
 	else							gen		= new Generator::HeightMap(path, 10.);
+	#else
+	if (!path.empty()) printf("[ERROR] Couldn't load image, OpenCV module isn't compiled\n");
+	gen		= new Generator::Sinus(10.);
+	#endif
 	
 	Condition::Condition* cond;
 	switch (conditionType)
