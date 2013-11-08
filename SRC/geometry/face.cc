@@ -2,12 +2,12 @@
 
 Face::Face()
 {
-	m_vertices[0] = nullptr;
-	m_vertices[1] = nullptr;
-	m_vertices[2] = nullptr;
-	m_faces[0] = 		nullptr;
-	m_faces[1] = 		nullptr;
-	m_faces[2] = 		nullptr;
+	m_vertices[0] = NULL;
+	m_vertices[1] = NULL;
+	m_vertices[2] = NULL;
+	m_faces[0] = 		NULL;
+	m_faces[1] = 		NULL;
+	m_faces[2] = 		NULL;
 	m_inside_key =	0.;
 }
 Face::Face(Vertex& v1, Vertex& v2, Vertex& v3)
@@ -15,9 +15,9 @@ Face::Face(Vertex& v1, Vertex& v2, Vertex& v3)
 	m_vertices[0] = &v1;
 	m_vertices[1] = &v2;
 	m_vertices[2] = &v3;
-	m_faces[0] = 		nullptr;
-	m_faces[1] = 		nullptr;
-	m_faces[2] = 		nullptr;
+	m_faces[0] = 		NULL;
+	m_faces[1] = 		NULL;
+	m_faces[2] = 		NULL;
 	m_inside_key =	0.;
 	
 	assert(aire() >= 0);
@@ -42,14 +42,14 @@ Vertex* Face::vertex(int i)
 	if (i == 0) return m_vertices[0];
 	if (i == 1) return m_vertices[1];
 	if (i == 2) return m_vertices[2];
-	return nullptr;
+	return NULL;
 }
 const Vertex* Face::vertex(int i) const
 {
 	if (i == 0) return m_vertices[0];
 	if (i == 1) return m_vertices[1];
 	if (i == 2) return m_vertices[2];
-	return nullptr;
+	return NULL;
 }
 int Face::index(const Vertex* v) const
 {
@@ -64,14 +64,14 @@ Face* Face::face(int i)
 	if (i == 0) return m_faces[0];
 	if (i == 1) return m_faces[1];
 	if (i == 2) return m_faces[2];
-	return nullptr;
+	return NULL;
 }
 const Face* Face::face(int i) const
 {
 	if (i == 0) return m_faces[0];
 	if (i == 1) return m_faces[1];
 	if (i == 2) return m_faces[2];
-	return nullptr;
+	return NULL;
 }
 int Face::index(const Face* f) const
 {
@@ -124,7 +124,7 @@ void Face::check() const
 	assert(aire() >= 0);
 	for (int i=0; i<3; ++i)
 	{
-		if (face(i) == nullptr) continue;
+		if (face(i) == NULL) continue;
 		assert(face(i)->index(this) != -1);
 		assert(vertex((i+1)%3) == face(i)->vertex((face(i)->index(this)+2)%3));		
 		assert(vertex((i+2)%3) == face(i)->vertex((face(i)->index(this)+1)%3));		

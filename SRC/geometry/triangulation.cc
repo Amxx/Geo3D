@@ -47,10 +47,17 @@ Triangulation::Triangulation(std::vector<vec3>& pts)
 
 Triangulation::~Triangulation()
 {
+	#ifdef CPP11
 	for (Vertex* v : m_vertices)
 		delete v;
 	for (Face* f : m_faces)
 		delete f;
+	#else
+	for (std::vector<Vertex*>::iterator it = m_vertices.begin(); it != m_vertices.end(); ++it)
+		delete (*it);
+	for (std::vector<Face*>::iterator it = m_faces.begin(); it != m_faces.end(); ++it)
+		delete (*it);
+	#endif
 }
 
 
@@ -61,8 +68,15 @@ void Triangulation::triangulate(const Condition::Condition& condition)
 {
 	m_priority.clear();
 	
+	#ifdef CPP11
 	for (Face* face : m_faces)
 		m_priority.push(face, face->key());
+	#else
+	for (std::vector<Face*>::iterator it = m_faces.begin(); it != m_faces.end(); ++it)
+		m_priority.push(*it, (*it)->key());
+	#endif
+	
+	
 	
 	while (condition.loop(m_priority))
 		divide(static_cast<Face*> (m_priority.pop()));
@@ -107,6 +121,8 @@ void Triangulation::divide(Face* face0)
 	
 	std::vector<Vertex*> inside;
 	face0->swap(inside);
+	
+	#ifdef CPP11
 	for (Vertex* pt : inside)
 	{
 		if 				(center->orientation(*pt, *v2) != NEGATIVE && center->orientation(*pt, *v1) != POSITIVE)
@@ -116,10 +132,23 @@ void Triangulation::divide(Face* face0)
 		else if 	(center->orientation(*pt, *v1) != NEGATIVE && center->orientation(*pt, *v0) != POSITIVE)
 			face2->insert(pt, fabs(pt->y() - face2->project(*pt).y()));
 		else
-			assert(false);
-		
+			assert(false);		
 	}
-	
+	#else
+	for (std::vector<Vertex*>::iterator it = inside.begin(); it != inside.end(); ++it)
+	{
+		if 				(center->orientation(*(*it), *v2) != NEGATIVE && center->orientation(*(*it), *v1) != POSITIVE)
+			face0->insert((*it), fabs((*it)->y() - face0->project(*(*it)).y()));
+		else if 	(center->orientation(*(*it), *v0) != NEGATIVE && center->orientation(*(*it), *v2) != POSITIVE)
+			face1->insert((*it), fabs((*it)->y() - face1->project(*(*it)).y()));
+		else if 	(center->orientation(*(*it), *v1) != NEGATIVE && center->orientation(*(*it), *v0) != POSITIVE)
+			face2->insert((*it), fabs((*it)->y() - face2->project(*(*it)).y()));
+		else
+			assert(false);		
+	}
+	#endif
+
+
 	m_faces.push_back(face1);
 	m_faces.push_back(face2);
 	
@@ -154,7 +183,7 @@ void Triangulation::delaunay(Face* f)
 	for (i_f=0; i_f<3; ++i_f)
 	{
 		g =	f->face(i_f);
-		if (g == nullptr)																								continue;
+		if (g == NULL)																								continue;
 		i_g =	g->index(f);
 		v_f = f->vertex(i_f);
 		v_g = g->vertex(i_g);
@@ -192,6 +221,8 @@ void Triangulation::bascule(Face* f, Face* g)
 	std::vector<Vertex*> inside_g;
 	f->swap(inside_f);
 	g->swap(inside_g);
+	
+	#ifdef CPP11
 	for (Vertex* pt : inside_f)
 	{
 		if (f->in(*pt))
@@ -210,7 +241,28 @@ void Triangulation::bascule(Face* f, Face* g)
 		else
 			assert(false);
 	}
-		
+	#else
+	for (std::vector<Vertex*>::iterator it = inside_f.begin(); it != inside_f.end(); ++it)
+	{
+		if (f->in(*(*it)))
+			f->insert((*it), fabs((*it)->y() - f->project(*(*it)).y()));
+		else if (g->in(*(*it)))
+			g->insert((*it), fabs((*it)->y() - g->project(*(*it)).y()));
+		else
+			assert(false);
+	}
+	for (std::vector<Vertex*>::iterator it = inside_g.begin(); it != inside_g.end(); ++it)
+	{
+		if (f->in(*(*it)))
+			f->insert((*it), fabs((*it)->y() - f->project(*(*it)).y()));
+		else if (g->in(*(*it)))
+			g->insert((*it), fabs((*it)->y() - g->project(*(*it)).y()));
+		else
+			assert(false);
+	}
+
+	#endif
+	
 	m_priority.update(f, f->key());
 	m_priority.update(g, g->key());
 }

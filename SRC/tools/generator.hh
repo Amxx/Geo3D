@@ -1,7 +1,8 @@
 #ifndef GENERATOR_HH
 #define GENERATOR_HH
 
-#include <cstdlib>
+#include <stdio.h>
+#include <stdlib.h>
 
 #include <string>
 #include <opencv2/core/core.hpp>

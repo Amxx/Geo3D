@@ -76,17 +76,27 @@ void SetMesh(const Triangulation& mesh, const Palette::Palette& tone, vec3 c)
 	surface = glGenLists(1);
 	glNewList(surface, GL_COMPILE);
 	glBegin(GL_TRIANGLES);
+	#ifdef CPP11
 	for (Face* face : mesh.m_faces)
 	{
 		glColorVec3(tone(face->vertex(0)->y()));	glVertexVec3D(*face->vertex(0));
 		glColorVec3(tone(face->vertex(1)->y()));	glVertexVec3D(*face->vertex(1));
 		glColorVec3(tone(face->vertex(2)->y()));	glVertexVec3D(*face->vertex(2));
 	}
+	#else
+	for (std::vector<Face*>::const_iterator it = mesh.m_faces.begin(); it != mesh.m_faces.end(); ++it)
+	{
+		glColorVec3(tone((*it)->vertex(0)->y()));	glVertexVec3D(*(*it)->vertex(0));
+		glColorVec3(tone((*it)->vertex(1)->y()));	glVertexVec3D(*(*it)->vertex(1));
+		glColorVec3(tone((*it)->vertex(2)->y()));	glVertexVec3D(*(*it)->vertex(2));
+	}
+	#endif
 	glEnd();
 	glEndList();
 	
 	maillage2D = glGenLists(1);
 	glNewList(maillage2D, GL_COMPILE);
+	#ifdef CPP11
 	for (Face* face : mesh.m_faces)
 	{
 		glBegin(GL_LINE_LOOP);
@@ -95,10 +105,21 @@ void SetMesh(const Triangulation& mesh, const Palette::Palette& tone, vec3 c)
 		glColorVec3(tone(face->vertex(2)->y()));	glVertexVec2D(*face->vertex(2));
 		glEnd();
 	}
+	#else
+	for (std::vector<Face*>::const_iterator it = mesh.m_faces.begin(); it != mesh.m_faces.end(); ++it)
+	{
+		glBegin(GL_LINE_LOOP);
+		glColorVec3(tone((*it)->vertex(0)->y()));	glVertexVec2D(*(*it)->vertex(0));
+		glColorVec3(tone((*it)->vertex(1)->y()));	glVertexVec2D(*(*it)->vertex(1));
+		glColorVec3(tone((*it)->vertex(2)->y()));	glVertexVec2D(*(*it)->vertex(2));
+		glEnd();
+	}
+	#endif
   glEndList();
 
 	maillage3D = glGenLists(1);
 	glNewList(maillage3D, GL_COMPILE);
+	#ifdef CPP11
 	for (Face* face : mesh.m_faces)
 	{
 		glBegin(GL_LINE_LOOP);
@@ -107,16 +128,34 @@ void SetMesh(const Triangulation& mesh, const Palette::Palette& tone, vec3 c)
 		glColorVec3(tone(face->vertex(2)->y()));	glVertexVec3D(*face->vertex(2));
 		glEnd();
 	}
+	#else
+	for (std::vector<Face*>::const_iterator it = mesh.m_faces.begin(); it != mesh.m_faces.end(); ++it)
+	{
+		glBegin(GL_LINE_LOOP);
+		glColorVec3(tone((*it)->vertex(0)->y()));	glVertexVec3D(*(*it)->vertex(0));
+		glColorVec3(tone((*it)->vertex(1)->y()));	glVertexVec3D(*(*it)->vertex(1));
+		glColorVec3(tone((*it)->vertex(2)->y()));	glVertexVec3D(*(*it)->vertex(2));
+		glEnd();
+	}
+	#endif
   glEndList();
 	
 	points = glGenLists(1);
 	glNewList(points, GL_COMPILE);
 	glBegin(GL_POINTS);
+	#ifdef CPP11
 	for (Vertex* vertex : mesh.m_vertices)
 	{
 		glColorVec3(tone(vertex->y()));
 		glVertexVec3D(*vertex);
 	}
+	#else
+	for (std::vector<Vertex*>::const_iterator it = mesh.m_vertices.begin(); it != mesh.m_vertices.end(); ++it)
+	{
+		glColorVec3(tone((*it)->y()));
+		glVertexVec3D(*(*it));
+	}	
+	#endif
   glEnd();
   glEndList();
 	

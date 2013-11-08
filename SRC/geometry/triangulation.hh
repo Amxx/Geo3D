@@ -1,8 +1,8 @@
 #ifndef TRIANGULATION_HH
 #define TRIANGULATION_HH
 
-#include <cassert>
-#include <cmath>
+#include <assert.h>
+#include <math.h>
 
 
 #include "vertex.hh"

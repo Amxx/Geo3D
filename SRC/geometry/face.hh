@@ -1,8 +1,9 @@
 #ifndef FACE_HH
 #define FACE_HH
 
-#include <cassert>
-#include <cmath>
+#include <stdlib.h>
+#include <assert.h>
+#include <math.h>
 
 #include "vertex.hh"
 

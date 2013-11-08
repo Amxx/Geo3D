@@ -1,6 +1,13 @@
 CC =			g++
-CFLAGS =	-g -Wall -std=c++11 -O3
+CFLAGS =	-g -Wall -O3
 LFLAGS =	-lglut -lGL -lGLU -lm -lopencv_core -lopencv_highgui
+
+
+GCC_VERSION_GE_47 = $(shell g++ -dumpversion | gawk '{print $$1>=4.7?"1":"0"}')
+ifeq ($(GCC_VERSION_GE_47),1)
+	CFLAGS +=-std=c++11 -DCPP11
+endif
+
 
 HEA = $(shell find SRC/ -name *.hh -o -name *.hpp)
 SRC = $(shell find SRC/ -name '*.cc')
@@ -10,11 +17,10 @@ EXEC = Geo3D
 
 
 
-
 .PHONY: all clean clear dox
 
 all: build
-
+	
 build: $(OBJ)
 	$(CC) $(LFLAGS) -o OBJS/$(EXEC) $^
 	ln -s -f OBJS/$(EXEC) .

@@ -6,17 +6,16 @@
 #include <vector>
 #include "object.hh"
 
-
-class priority : private std::vector<std::pair<double, Object*>>
+class priority : private std::vector< std::pair<double, Object*> >
 {
 	public:
 	
-		typedef double																				key_type;
-		typedef Object*																				value_type;
-		typedef std::vector<std::pair<key_type, value_type>>	container_type;
-		typedef typename container_type::size_type						size_type;
-		typedef typename container_type::iterator							iterator;
-		typedef typename container_type::const_iterator				const_iterator;
+		typedef double																					key_type;
+		typedef Object*																					value_type;
+		typedef std::vector< std::pair<key_type, value_type> >	container_type;
+		typedef typename container_type::size_type							size_type;
+		typedef typename container_type::iterator								iterator;
+		typedef typename container_type::const_iterator					const_iterator;
 	
 	public:
 			
