@@ -1,6 +1,7 @@
-CC =			g++
+CC =		g++
 CFLAGS =	-g -Wall -O3
 LFLAGS =	-lglut -lGL -lGLU -lm
+
 
 
 # GCC_VERSION_GE_47 = $(shell g++ -dumpversion | gawk '{print $$1>=4.7?"1":"0"}')
@@ -13,15 +14,13 @@ LFLAGS =	-lglut -lGL -lGLU -lm
 
 # ============ MAC OS ===========================================================
 ifneq ($(strip $(shell $(CC) -v 2>&1 | grep -i "Apple")),)
- GL_INCLUDE =   -I/usr/X11/include
-# GL_LDLIBS =    -lglut -lGL -lm -lobjc
- GL_LDLIBDIR =  -L. -L/usr/X11/lib -L"/System/Library/Frameworks/OpenGL.framework/     Libraries" -framework GLUT -framework OpenGL
+ GL_LIBDIRS =	-L. -L/usr/X11/lib -L"/System/Library/Frameworks/OpenGL.framework/Libraries" -framework GLUT -framework OpenGL
+ GL_INCLUDE =	-I/usr/X11/include
 endif
 # ============ LINUX ============================================================
 ifneq ($(strip $(shell $(CC) -v 2>&1 | grep -i "Linux")),)
+ GL_LIBDIRS =	
  GL_INCLUDE =   -I. -I/usr/include
-# GL_LDLIBS =    -lglut -lGL -lGLU -lm
- GL_LDLIBDIR =
 endif
 # ===============================================================================
 
