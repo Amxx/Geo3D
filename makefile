@@ -3,6 +3,7 @@ CFLAGS = -g -Wall -O3
 LFLAGS = -lglut -lGL -lGLU -lm
 
 
+
 GCC_VERSION_GE_47 = $(shell g++ -dumpversion | awk '{print $$1>=4.7?"1":"0"}')
 ifeq ($(GCC_VERSION_GE_47),1)
 	CFLAGS += -std=c++11 -DCPP11
@@ -24,8 +25,8 @@ ifneq ($(strip $(shell $(CC) -v 2>&1 | grep -i "Linux")),)
 	GL_INCLUDE =   -I. -I/usr/include
 endif
 # ===============================================================================
- 
- 
+
+
 
 HEA = $(shell find SRC/ -name *.hh -o -name *.hpp)
 SRC = $(shell find SRC/ -name '*.cc')
@@ -37,16 +38,17 @@ EXEC = Geo3D
 
 .PHONY: all clean clear dox
 
-all: build
+all: mkdir build
+	
+mkdir :
+	mkdir -p OBJS/geometry OBJS/structure OBJS/tools
 	
 build: $(OBJ)
 	$(CC) $(LFLAGS) $(GL_LIBDIRS) -o OBJS/$(EXEC) $^
 	ln -s -f OBJS/$(EXEC) .
 
-
 $(OBJ): OBJS/%.o : SRC/%.cc $(HEA) makefile
 	$(CC) $(CFLAGS) $(GL_INCLUDE) -c $< -o $@
-
 
 clean:
 	rm -r $(OBJ)
