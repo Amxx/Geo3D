@@ -26,7 +26,10 @@ namespace Generator
 
 	class Random : public Generator
 	{
+			double m_scale;
+			double m_height;
 		public:
+			Random(const double& scale = 1., const double& height = 1.);
 			vec3 base				(int)	const;
 			vec3 operator() ()		const;
 	};
@@ -34,8 +37,10 @@ namespace Generator
 	class Sinus : public Generator
 	{
 			double m_f;
+			double m_scale;
+			double m_height;
 		public:
-			Sinus(const double& f = 1.);
+			Sinus(const double& f, const double& scale = 1., const double& height = 1.);
 			vec3 base				(int)	const;
 			vec3 operator() ()		const;
 	};
@@ -45,10 +50,11 @@ namespace Generator
 			cv::Mat 			m_map;
 			double				m_ratio;
 			double				m_scale;
-			unsigned char	m_height;
+			double				m_height;
+			unsigned char	m_maxValue;
 	
 		public:
-			HeightMap(const std::string& filename, const double& scale = 1.);
+			HeightMap(const std::string& filename, const double& scale = 1., const double& height = 1.);
 			~HeightMap			();
 			vec3 base				(int)	const;
 			vec3 operator() ()		const;	

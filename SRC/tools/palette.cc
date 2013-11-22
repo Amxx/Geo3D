@@ -24,12 +24,22 @@ vec3 Color::colors[21] = {	vec3(121, 178, 222),
 														vec3(245, 244, 242),
 														vec3(255, 255, 255)		};
 				
-vec3 BW::operator() (double& h) const
+														
+BW::BW(const double& maxHeight) :
+	m_maxHeight(maxHeight)
 {
-	return vec3(h, h, h);
+}
+vec3 BW::operator() (const double& h) const
+{
+	return vec3(h/m_maxHeight, h/m_maxHeight, h/m_maxHeight);
 }
 
-vec3 Color::operator() (double& h) const
+
+Color::Color(const double& maxHeight) :
+	m_maxHeight(maxHeight)
 {
-	return colors[(int) (h*20)] / 255.;
+}
+vec3 Color::operator() (const double& h) const
+{
+	return colors[(int) (20.*h/m_maxHeight)] / 255.;
 }

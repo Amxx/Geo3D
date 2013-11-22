@@ -32,7 +32,7 @@ static void check_camera()
 }
 
 inline void glColorVec3(const vec3& v)			{	glColor3f(v.x(),	v.y(),			v.z());			}
-inline void glVertexVec3D(const vec3& v)		{	glVertex3d(v.x(), 0.2* v.y(),	v.z());			}
+inline void glVertexVec3D(const vec3& v)		{	glVertex3d(v.x(), v.y(),			v.z());			}
 inline void glVertexVec2D(const vec3& v)		{	glVertex3d(v.x(), 0., 				v.z());			}
 
 

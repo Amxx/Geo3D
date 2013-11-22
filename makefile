@@ -9,7 +9,7 @@ ifeq ($(GCC_VERSION_GE_47),1)
 	CFLAGS += -std=c++11 -DCPP11
 endif
 
-CFLAFS += -DOPENCV
+CFLAGS += -DOPENCV
 LFLAGS += -lopencv_core -lopencv_highgui
 
 

@@ -27,9 +27,13 @@ int main(int argc, char* argv[])
 	
 	
 	int						vertexNumber		= 1000000;
+	double				scale						=	10.;
+	double				height					= 1.;
+	
 	int						triangleNumber	= 100000;
 	double				precision				= 0.01;
 	int						conditionType		= -1;
+	
 	std::string		path						= "";
 	bool					color						= false;
 	
@@ -56,6 +60,14 @@ int main(int argc, char* argv[])
 		{
 			path = argv[++i];
 		}
+		else if (i+1 < argc && !strcmp(argv[i], "-scale"))
+		{
+			scale = atof(argv[++i]);
+		}
+		else if (i+1 < argc && !strcmp(argv[i], "-height"))
+		{
+			height = atof(argv[++i]);
+		}
 		else if (i < argc && !strcmp(argv[i], "-truecolors"))
 		{
 			color = true;
@@ -71,11 +83,11 @@ int main(int argc, char* argv[])
 	
 	Generator::Generator* gen;
 	#ifdef OPENCV
-	if (path.empty())	gen		= new Generator::Sinus(10.);
-	else							gen		= new Generator::HeightMap(path, 10.);
+	if (path.empty())	gen		= new Generator::Sinus(10., scale, height);
+	else							gen		= new Generator::HeightMap(path, scale, height);
 	#else
 	if (!path.empty()) printf("[ERROR] Couldn't load image, OpenCV module isn't compiled\n");
-	gen		= new Generator::Sinus(10.);
+	gen		= new Generator::Sinus(scale);
 	#endif
 	
 	Condition::Condition* cond;
@@ -93,8 +105,8 @@ int main(int argc, char* argv[])
 	}
 	
 	Palette::Palette* tone;
-	if (color)				tone	= new Palette::Color();
-	else							tone	= new Palette::BW();
+	if (color)				tone	= new Palette::Color(height);
+	else							tone	= new Palette::BW(height);
 	
 	vec3 camera = 	.5 * gen->base(3); 
 	
