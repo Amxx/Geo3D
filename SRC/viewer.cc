@@ -1,10 +1,10 @@
 #include "viewer.hh"
 
 static vec3			camera_position;
-static double 	camera_orientation_x =	60.;
-static double 	camera_orientation_y =	0.;
+static double 	camera_orientation_x	=	60.;
+static double 	camera_orientation_y	=	0.;
 
-static int			mouse_status = 					0;
+static int			mouse_status					= 0;
 static int			mouse_x;
 static int			mouse_y;
 
@@ -12,16 +12,16 @@ static GLuint		points;
 static GLuint		maillage2D;
 static GLuint		maillage3D;
 static GLuint		surface;
-static int			display =								0x00000001;
+static int			display								= 0x00000001;
 
 
 
 
 static vec3 inCamera(const vec3& p)
 {
-	// double thetaX = -M_PI*camera_orientation_x/180;
+// double thetaX = -M_PI*camera_orientation_x/180;
 	double thetaY =  M_PI*camera_orientation_y/180;
-	// return p.rotateX(thetaX).rotateY(thetaY);
+// return p.rotateX(thetaX).rotateY(thetaY);
 	return p.rotateY(thetaY);
 }
 
