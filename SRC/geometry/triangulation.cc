@@ -76,8 +76,6 @@ void Triangulation::triangulate(const Condition::Condition& condition)
 		m_priority.push(*it, (*it)->key());
 	#endif
 	
-	
-	
 	while (condition.loop(m_priority))
 		divide(static_cast<Face*> (m_priority.pop()));
 	

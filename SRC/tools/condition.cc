@@ -11,7 +11,7 @@ bool NumberCondition::loop(const priority& faces) const
 }
 			
 			
-FidelityCondition::FidelityCondition(double p) : precision(p)
+FidelityCondition::FidelityCondition(const double& p) : precision(p)
 {
 }
 bool FidelityCondition::loop(const priority& faces) const

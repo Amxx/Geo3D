@@ -25,7 +25,7 @@ namespace Condition
 	{
 			double precision;
 		public:
-			FidelityCondition	(double p = 0.01);
+			FidelityCondition	(const double& p = 0.01);
 			bool loop					(const priority&) const;
 	};
 };
