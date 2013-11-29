@@ -16,7 +16,7 @@ LFLAGS += -lopencv_core -lopencv_highgui
 
 # ============ MAC OS ===========================================================
 ifneq ($(strip $(shell $(CC) -v 2>&1 | grep -i "Apple")),)
-	GL_LIBDIRS =	-L. -L/usr/X11/lib -L"/System/Library/Frameworks/OpenGL.framework/Libraries" -framework GLUT -framework OpenGL
+	GL_LIBDIRS =	-L. -L/usr/X11/lib -L/usr/local/lib -L"/System/Library/Frameworks/OpenGL.framework/Libraries" -framework GLUT -framework OpenGL
 	GL_INCLUDE =	-I/usr/X11/include
 endif
 # ============ LINUX ============================================================

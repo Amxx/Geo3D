@@ -58,13 +58,31 @@ int main(int argc, char* argv[])
 			printf("    -triangle <int>       Nombre de triangle a construire    \n");
 			printf("    -precision <float>    Precision a atteinder (ecart max)  \n");
 			printf("=============================================================\n");
-			
 			return 0;
 		}
+		// --------------------------------------------------
+		else if (i < argc && !strcmp(argv[i], "-truecolors"))
+		{
+			color = true;
+		}
+		// --------------------------------------------------
 		else if (i+1 < argc && !strcmp(argv[i], "-n"))
 		{
 			vertexNumber = atoi(argv[++i]);
 		}
+		else if (i+1 < argc && !strcmp(argv[i], "-scale"))
+		{
+			scale = atof(argv[++i]);
+		}
+		else if (i+1 < argc && !strcmp(argv[i], "-height"))
+		{
+			height = atof(argv[++i]);
+		}
+		else if (i+1 < argc && !strcmp(argv[i], "-input"))
+		{
+			path = argv[++i];
+		}
+		// --------------------------------------------------
 		else if (i+1 < argc && !strcmp(argv[i], "-triangles"))
 		{
 			triangleNumber = atoi(argv[++i]);
@@ -75,22 +93,7 @@ int main(int argc, char* argv[])
 			precision = atof(argv[++i]);
 			conditionType = 1;
 		}
-		else if (i+1 < argc && !strcmp(argv[i], "-input"))
-		{
-			path = argv[++i];
-		}
-		else if (i+1 < argc && !strcmp(argv[i], "-scale"))
-		{
-			scale = atof(argv[++i]);
-		}
-		else if (i+1 < argc && !strcmp(argv[i], "-height"))
-		{
-			height = atof(argv[++i]);
-		}
-		else if (i < argc && !strcmp(argv[i], "-truecolors"))
-		{
-			color = true;
-		}
+		// --------------------------------------------------
 		else
 			printf("unknown command : %s\n", argv[i]);
 	}
