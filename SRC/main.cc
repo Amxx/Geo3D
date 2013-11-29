@@ -15,6 +15,7 @@
 
 
 
+
 int main(int argc, char* argv[])
 {
 	
@@ -42,7 +43,25 @@ int main(int argc, char* argv[])
 	for (int i = 1; i<argc; ++i)	
 	{
 
-		if (i+1 < argc && !strcmp(argv[i], "-n"))
+		if (i < argc && !strcmp(argv[i], "-help"))
+		{
+			printf("============== Geo3D - A simple terrain viewer ==============\n");
+			printf("Usage: %s [options]                                          \n", argv[0]);
+			printf("    -truecolors           Affichage en couleurs reelles      \n");
+			printf("  generation de points :                                     \n");
+			printf("    -n <int>              Nombre de points a cree            \n");
+			printf("    -scale <float>        Taille de la zone de tracé         \n");
+			printf("    -height <float>       Hauteur de la zone de tracé        \n");
+			printf("    -input <path>         Path to greyscale image used       \n");
+			printf("                          to generate the points             \n");
+			printf("  conditions d'arret :                                       \n");
+			printf("    -triangle <int>       Nombre de triangle a construire    \n");
+			printf("    -precision <float>    Precision a atteinder (ecart max)  \n");
+			printf("=============================================================\n");
+			
+			return 0;
+		}
+		else if (i+1 < argc && !strcmp(argv[i], "-n"))
 		{
 			vertexNumber = atoi(argv[++i]);
 		}
@@ -56,7 +75,7 @@ int main(int argc, char* argv[])
 			precision = atof(argv[++i]);
 			conditionType = 1;
 		}
-		else if (i+1 < argc && !strcmp(argv[i], "-path"))
+		else if (i+1 < argc && !strcmp(argv[i], "-input"))
 		{
 			path = argv[++i];
 		}
