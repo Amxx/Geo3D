@@ -59,7 +59,7 @@ clear: clean
 
 ################################################################################
 # Generate doxygen documentation of file two.c using command file two.dox.
-dox: $(SRC)
+doc: $(HEA)
 	doxygen SRC/delaunay.dox
 #
 
