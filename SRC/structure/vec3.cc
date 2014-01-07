@@ -27,9 +27,9 @@ const double vec3::x() const { return m_value[0]; }
 const double vec3::y() const { return m_value[1]; }
 const double vec3::z() const { return m_value[2]; }
 
-double vec3::aire(const vec3& b, const vec3& c) const
+double vec3::aire(const vec3& pt1, const vec3& pt2) const
 {
-	return .5 * ((b.x()-x()) * (c.z()-z()) - (b.z()-z()) * (c.x()-x()));
+	return .5 * ((pt1.x()-x()) * (pt2.z()-z()) - (pt1.z()-z()) * (pt2.x()-x()));
 }
 
 sens vec3::orientation(const vec3& pt1, const vec3& pt2) const
@@ -45,14 +45,14 @@ sens vec3::orientation(const vec3& pt1, const vec3& pt2) const
 	return o;
 }
 
-bool vec3::in_circle(const vec3& a, const vec3& b, const vec3& c) const
+bool vec3::in_circle(const vec3& pt1, const vec3& pt2, const vec3& pt3) const
 {
-  double adx = a.m_value[0] - m_value[0];
-  double ady = a.m_value[2] - m_value[2];
-  double bdx = b.m_value[0] - m_value[0];
-  double bdy = b.m_value[2] - m_value[2];
-  double cdx = c.m_value[0] - m_value[0];
-  double cdy = c.m_value[2] - m_value[2];
+  double adx = pt1.m_value[0] - m_value[0];
+  double ady = pt1.m_value[2] - m_value[2];
+  double bdx = pt2.m_value[0] - m_value[0];
+  double bdy = pt2.m_value[2] - m_value[2];
+  double cdx = pt3.m_value[0] - m_value[0];
+  double cdy = pt3.m_value[2] - m_value[2];
 
   double ab_det = adx * bdy - bdx * ady;
   double bc_det = bdx * cdy - cdx * bdy;

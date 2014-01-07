@@ -1,7 +1,7 @@
 #include "triangulation.hh"
-
-
 #include <cstdio>
+
+using namespace Geometry;
 
 Triangulation::Triangulation(int nb, const Generator::Generator& generator)
 {
@@ -38,13 +38,6 @@ Triangulation::Triangulation(int nb, const Generator::Generator& generator)
 	
 }
 
-Triangulation::Triangulation(std::vector<vec3>& pts)
-{
-	// TODO
-	assert(false);
-}
-
-
 Triangulation::~Triangulation()
 {
 	#ifdef CPP11
@@ -76,7 +69,7 @@ void Triangulation::triangulate(const Condition::Condition& condition)
 		m_priority.push(*it, (*it)->key());
 	#endif
 	
-	while (condition.loop(m_priority))
+	while (condition.loop(*this))
 		divide(static_cast<Face*> (m_priority.pop()));
 	
 }
@@ -150,9 +143,9 @@ void Triangulation::divide(Face* face0)
 	m_faces.push_back(face1);
 	m_faces.push_back(face2);
 	
-	m_priority.push(face0, face0->key());
-	m_priority.push(face1, face1->key());
-	m_priority.push(face2, face2->key());
+	/*if (!face0->m_inside.empty())*/ m_priority.push(face0, face0->key());
+	/*if (!face1->m_inside.empty())*/ m_priority.push(face1, face1->key());
+	/*if (!face2->m_inside.empty())*/ m_priority.push(face2, face2->key());
 	
 	m_queue.push(face0);
 	m_queue.push(face1);
@@ -181,7 +174,7 @@ void Triangulation::delaunay(Face* f)
 	for (i_f=0; i_f<3; ++i_f)
 	{
 		g =	f->face(i_f);
-		if (g == NULL)																								continue;
+		if (g == NULL)																									continue;
 		i_g =	g->index(f);
 		v_f = f->vertex(i_f);
 		v_g = g->vertex(i_g);

@@ -6,7 +6,7 @@ LFLAGS = -lglut -lGL -lGLU -lm
 
 GCC_VERSION_GE_47 = $(shell g++ -dumpversion | awk '{print $$1>=4.7?"1":"0"}')
 ifeq ($(GCC_VERSION_GE_47),1)
-	CFLAGS += -std=c++11 -DCPP11
+# 	CFLAGS += -std=c++11 -DCPP11
 endif
 
 CFLAGS += -DOPENCV
@@ -32,17 +32,17 @@ HEA = $(shell find SRC/ -name *.hh -o -name *.hpp)
 SRC = $(shell find SRC/ -name '*.cc')
 OBJ = $(patsubst SRC/%.cc, OBJS/%.o, $(SRC))
 
-EXEC = Geo3D
+EXEC = Delaunay
 
 
 
 .PHONY: all clean clear dox
 
 all: mkdir build
-	
+
 mkdir :
 	mkdir -p OBJS/geometry OBJS/structure OBJS/tools
-	
+
 build: $(OBJ)
 	$(CC) $(LFLAGS) $(GL_LIBDIRS) -o OBJS/$(EXEC) $^
 	ln -s -f OBJS/$(EXEC) .
@@ -59,8 +59,7 @@ clear: clean
 
 ################################################################################
 # Generate doxygen documentation of file two.c using command file two.dox.
-dox: src/examples/two.c src/examples/two.h
-	rm -rf DOX
-	doxygen src/examples/two.dox
+dox: $(SRC)
+	doxygen SRC/delaunay.dox
 #
 

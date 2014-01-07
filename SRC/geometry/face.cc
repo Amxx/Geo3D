@@ -1,5 +1,7 @@
 #include "face.hh"
 
+using namespace Geometry;
+
 Face::Face()
 {
 	m_vertices[0] = NULL;
@@ -8,7 +10,7 @@ Face::Face()
 	m_faces[0] = 		NULL;
 	m_faces[1] = 		NULL;
 	m_faces[2] = 		NULL;
-	m_inside_key =	0.;
+	m_inside_key =	-1.0;
 }
 Face::Face(Vertex& v1, Vertex& v2, Vertex& v3)
 {
@@ -18,7 +20,7 @@ Face::Face(Vertex& v1, Vertex& v2, Vertex& v3)
 	m_faces[0] = 		NULL;
 	m_faces[1] = 		NULL;
 	m_faces[2] = 		NULL;
-	m_inside_key =	0.;
+	m_inside_key =	-1.0;
 	
 	assert(aire() >= 0);
 }
@@ -30,7 +32,7 @@ Face::Face(Vertex& v1, Vertex& v2, Vertex& v3, Face& f1, Face& f2, Face& f3)
 	m_faces[0] = 		&f1;
 	m_faces[1] = 		&f2;
 	m_faces[2] = 		&f3;
-	m_inside_key =	0.;
+	m_inside_key =	-1.0;
 	
 	assert(aire() >= 0);
 }
@@ -149,7 +151,7 @@ void Face::insert(Vertex* pt, const double& key)
 void Face::swap(std::vector<Vertex*>& v)
 {
 	v.swap(m_inside);
-	m_inside_key = 0;	
+	m_inside_key = -1.0;	
 }
 
 double& Face::key()

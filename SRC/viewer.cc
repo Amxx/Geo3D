@@ -1,18 +1,21 @@
 #include "viewer.hh"
 
-static vec3			camera_position;
-static double 	camera_orientation_x	=	60.;
-static double 	camera_orientation_y	=	0.;
+static vec3								camera_position;
+static double 						camera_orientation_x	=	60.;
+static double 						camera_orientation_y	=	0.;
 
-static int			mouse_status					= 0;
-static int			mouse_x;
-static int			mouse_y;
+static int								mouse_status					= 0;
+static int								mouse_x;
+static int								mouse_y;
 
-static GLuint		points;
-static GLuint		maillage2D;
-static GLuint		maillage3D;
-static GLuint		surface;
-static int			display								= 0x00000001;
+static GLuint							points;
+static GLuint							maillage2D;
+static GLuint							maillage3D;
+static GLuint							surface;
+static int								display								= 0x00000001;
+
+static KeyActions::Layout	layout 								= KeyActions::AZERTY();
+
 
 
 
@@ -69,7 +72,7 @@ void Init(int& argc, char* argv[], int width, int height)
 }
 
 
-void SetMesh(const Triangulation& mesh, const Palette::Palette& tone, vec3 c)
+void SetMesh(const Geometry::Triangulation& mesh, const Palette::Palette& tone, vec3 c)
 {	
 	camera_position = vec3(0., 2., 1.) + c;
 	
@@ -84,7 +87,7 @@ void SetMesh(const Triangulation& mesh, const Palette::Palette& tone, vec3 c)
 		glColorVec3(tone(face->vertex(2)->y()));	glVertexVec3D(*face->vertex(2));
 	}
 	#else
-	for (std::vector<Face*>::const_iterator it = mesh.m_faces.begin(); it != mesh.m_faces.end(); ++it)
+	for (std::vector<Geometry::Face*>::const_iterator it = mesh.m_faces.begin(); it != mesh.m_faces.end(); ++it)
 	{
 		glColorVec3(tone((*it)->vertex(0)->y()));	glVertexVec3D(*(*it)->vertex(0));
 		glColorVec3(tone((*it)->vertex(1)->y()));	glVertexVec3D(*(*it)->vertex(1));
@@ -106,7 +109,7 @@ void SetMesh(const Triangulation& mesh, const Palette::Palette& tone, vec3 c)
 		glEnd();
 	}
 	#else
-	for (std::vector<Face*>::const_iterator it = mesh.m_faces.begin(); it != mesh.m_faces.end(); ++it)
+	for (std::vector<Geometry::Face*>::const_iterator it = mesh.m_faces.begin(); it != mesh.m_faces.end(); ++it)
 	{
 		glBegin(GL_LINE_LOOP);
 		glColorVec3(tone((*it)->vertex(0)->y()));	glVertexVec2D(*(*it)->vertex(0));
@@ -129,7 +132,7 @@ void SetMesh(const Triangulation& mesh, const Palette::Palette& tone, vec3 c)
 		glEnd();
 	}
 	#else
-	for (std::vector<Face*>::const_iterator it = mesh.m_faces.begin(); it != mesh.m_faces.end(); ++it)
+	for (std::vector<Geometry::Face*>::const_iterator it = mesh.m_faces.begin(); it != mesh.m_faces.end(); ++it)
 	{
 		glBegin(GL_LINE_LOOP);
 		glColorVec3(tone((*it)->vertex(0)->y()));	glVertexVec3D(*(*it)->vertex(0));
@@ -150,7 +153,7 @@ void SetMesh(const Triangulation& mesh, const Palette::Palette& tone, vec3 c)
 		glVertexVec3D(*vertex);
 	}
 	#else
-	for (std::vector<Vertex*>::const_iterator it = mesh.m_vertices.begin(); it != mesh.m_vertices.end(); ++it)
+	for (std::vector<Geometry::Vertex*>::const_iterator it = mesh.m_vertices.begin(); it != mesh.m_vertices.end(); ++it)
 	{
 		glColorVec3(tone((*it)->y()));
 		glVertexVec3D(*(*it));
@@ -189,20 +192,21 @@ void Resize(int width, int height)
   glMatrixMode(GL_MODELVIEW);
 }
 
+void Keyboard_setLayout(KeyActions::Layout l)
+{
+	layout = l;
+}
+
 void Keyboard(unsigned char key, int x, int y)
 {
-	switch(key)
-	{		
-		case 27: exit(0);
-		case 'q': camera_position -= inCamera(vec3(0.1, 0.0, 0.0)); break;
-		case 'd': camera_position += inCamera(vec3(0.1, 0.0, 0.0)); break;
-		case 'f':	camera_position -= inCamera(vec3(0.0, 0.1, 0.0)); break;
-		case 'r': camera_position += inCamera(vec3(0.0, 0.1, 0.0)); break;
-		case 'z': camera_position -= inCamera(vec3(0.0, 0.0, 0.1)); break;
-		case 's': camera_position += inCamera(vec3(0.0, 0.0, 0.1)); break;
-		// default: printf("-- unmapped key : %d\n", key); break;
-		default: break;
-	}
+	if ( key == 27 ) exit(0);
+	else if ( key == layout(KeyActions::FRONT)	) camera_position -= inCamera(vec3(0.0, 0.0, 0.1));
+	else if ( key == layout(KeyActions::BACK)		) camera_position += inCamera(vec3(0.0, 0.0, 0.1));
+	else if ( key == layout(KeyActions::LEFT)		) camera_position -= inCamera(vec3(0.1, 0.0, 0.0));
+	else if ( key == layout(KeyActions::RIGHT)	) camera_position += inCamera(vec3(0.1, 0.0, 0.0));
+	else if ( key == layout(KeyActions::UP)			) camera_position += inCamera(vec3(0.0, 0.1, 0.0));
+	else if ( key == layout(KeyActions::DOWN)		) camera_position -= inCamera(vec3(0.0, 0.1, 0.0));
+	
 	glutPostRedisplay();
 }
 
@@ -214,7 +218,6 @@ void Special(int key, int x, int y)
 		case GLUT_KEY_F2:			display = display xor 0x00000002;						break;
 		case GLUT_KEY_F3:			display = display xor 0x00000004;						break;
 		case GLUT_KEY_F4:			display = display xor 0x00000008;						break;
-		
 		case GLUT_KEY_LEFT:		camera_orientation_y -= 1; 									break;
 		case GLUT_KEY_RIGHT:	camera_orientation_y += 1; 									break;
 		case GLUT_KEY_DOWN:		camera_orientation_x -= 1; check_camera();	break;

@@ -1,24 +1,26 @@
 #include "priority.hh"
 
-priority::iterator						priority::begin()					{ return container_type::begin(); 				}
-priority::const_iterator			priority::begin() 	const	{ return container_type::begin(); 				}
-priority::iterator						priority::end()						{ return container_type::end();						}
-priority::const_iterator			priority::end()			const	{ return container_type::end();						}
+using namespace Structure;
 
-void													priority::clear()					{ container_type::clear();								}
-bool													priority::empty()		const	{ return container_type::empty();					}
-priority::size_type						priority::size()		const { return container_type::size();					}
+Priority::iterator						Priority::begin()					{ return container_type::begin(); 				}
+Priority::const_iterator			Priority::begin() 	const	{ return container_type::begin(); 				}
+Priority::iterator						Priority::end()						{ return container_type::end();						}
+Priority::const_iterator			Priority::end()			const	{ return container_type::end();						}
 
-priority::value_type&					priority::top()						{ return container_type::front().second;	}
-const priority::value_type&		priority::top()			const	{ return container_type::front().second;	}
-priority::key_type&						priority::top_key()				{ return container_type::front().first;		}
-const priority::key_type&			priority::top_key()	const	{ return container_type::front().first;		}
+void													Priority::clear()					{ container_type::clear();								}
+bool													Priority::empty()		const	{ return container_type::empty();					}
+Priority::size_type						Priority::size()		const { return container_type::size();					}
+
+Priority::value_type&					Priority::top()						{ return container_type::front().second;	}
+const Priority::value_type&		Priority::top()			const	{ return container_type::front().second;	}
+Priority::key_type&						Priority::top_key()				{ return container_type::front().first;		}
+const Priority::key_type&			Priority::top_key()	const	{ return container_type::front().first;		}
 
 
 
 
 
-void priority::push(Object* value, const double& key)
+void Priority::push(Object* value, const double& key)
 {
 	int s = size();
 	container_type::push_back(std::make_pair(key, value));
@@ -26,14 +28,14 @@ void priority::push(Object* value, const double& key)
 	heapUp(s);
 }
 
-void priority::update(Object* o, const double& key)
+void Priority::update(Object* o, const double& key)
 {
 	assert(o && container_type::at(o->id()).second == o);
 	container_type::at(o->id()).first = key;
 	heap(o->id());
 }
 
-priority::value_type priority::pop()
+Priority::value_type Priority::pop()
 {
 	value_type result = container_type::front().second;
 	swap(0, size()-1);
@@ -46,20 +48,20 @@ priority::value_type priority::pop()
 
 
 
-void priority::swap(int i, int j)
+void Priority::swap(int i, int j)
 {
 	std::swap(container_type::at(i), container_type::at(j));
 	if (container_type::at(i).second) container_type::at(i).second->id() = i;
 	if (container_type::at(j).second) container_type::at(j).second->id() = j;
 }
-void priority::heap(int idx)
+void Priority::heap(int idx)
 {
 	if ( idx > 0 && container_type::at(idx).first > container_type::at((idx-1)/2).first)
 		heapUp(idx);
 	else
 		heapDown(idx);
 }
-void priority::heapUp(int idx)
+void Priority::heapUp(int idx)
 {
 	int i = idx;
 	while ( i>0 && container_type::at(i).first > container_type::at((i-1)/2).first )
@@ -68,7 +70,7 @@ void priority::heapUp(int idx)
 		i = (i-1)/2;
 	}
 }
-void priority::heapDown(int idx)
+void Priority::heapDown(int idx)
 {
 	int i = idx, l = size()-1;
 	while (2*i+1 <= l)

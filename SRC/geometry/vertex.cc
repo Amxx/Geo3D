@@ -1,5 +1,7 @@
 #include "vertex.hh"
 
+using namespace Geometry;
+
 Vertex::Vertex() :
 	vec3()
 {

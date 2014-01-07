@@ -27,16 +27,13 @@ int main(int argc, char* argv[])
 	
 	
 	
-	int						vertexNumber		= 1000000;
-	double				scale						=	10.;
-	double				height					= 1.;
+	int																	vertexNumber		= 100000;
+	double															scale						=	10.;
+	double															height					= 1.;
+	std::string													path						= "";
+	bool																color						= false;
 	
-	int						triangleNumber	= 100000;
-	double				precision				= 0.01;
-	int						conditionType		= -1;
-	
-	std::string		path						= "";
-	bool					color						= false;
+	Condition::Condition_set						limitations;
 	
 
 	
@@ -45,19 +42,22 @@ int main(int argc, char* argv[])
 
 		if (i < argc && !strcmp(argv[i], "-help"))
 		{
-			printf("============== Geo3D - A simple terrain viewer ==============\n");
-			printf("Usage: %s [options]                                          \n", argv[0]);
-			printf("    -truecolors           Affichage en couleurs reelles      \n");
-			printf("  generation de points :                                     \n");
-			printf("    -n <int>              Nombre de points a cree            \n");
-			printf("    -scale <float>        Taille de la zone de tracé         \n");
-			printf("    -height <float>       Hauteur de la zone de tracé        \n");
-			printf("    -input <path>         Path to greyscale image used       \n");
-			printf("                          to generate the points             \n");
-			printf("  conditions d'arret :                                       \n");
-			printf("    -triangle <int>       Nombre de triangle a construire    \n");
-			printf("    -precision <float>    Precision a atteinder (ecart max)  \n");
-			printf("=============================================================\n");
+			printf("=============== Geo3D - A simple terrain viewer ===============\n");
+			printf("Usage: %s [options]                                            \n", argv[0]);
+			printf("    -truecolors              Affichage en couleurs reelles     \n");
+			printf("  generation de points :                                       \n");
+			printf("    -n <int>                 Nombre de points a cree           \n");
+			printf("    -scale <float>           Taille de la zone de tracé        \n");
+			printf("    -height <float>          Hauteur de la zone de tracé       \n");
+			printf("    -input <path>            Path to greyscale image used      \n");
+			printf("                             to generate the points            \n");
+			printf("  conditions d'arret :                                         \n");
+			printf("    -stop=triangle <int>     Nombre de triangle a construire   \n");
+			printf("    -stop=precision <float>  Precision a atteinder (ecart max) \n");
+			printf("                                                               \n");
+			printf("  compatibilité :                                              \n");
+			printf("    -layout=[azerty|qwerty]  Disposition clavier               \n");
+			printf("===============================================================\n");
 			return 0;
 		}
 		// --------------------------------------------------
@@ -83,15 +83,22 @@ int main(int argc, char* argv[])
 			path = argv[++i];
 		}
 		// --------------------------------------------------
-		else if (i+1 < argc && !strcmp(argv[i], "-triangles"))
+		else if (i+1 < argc && !strcmp(argv[i], "-stop=triangle"))
 		{
-			triangleNumber = atoi(argv[++i]);
-			conditionType = 0;
+			limitations.push_back(new Condition::NumberCondition(atoi(argv[++i])));
 		}
-		else if (i+1 < argc && !strcmp(argv[i], "-precision"))
+		else if (i+1 < argc && !strcmp(argv[i], "-stop=precision"))
 		{
-			precision = atof(argv[++i]);
-			conditionType = 1;
+			limitations.push_back(new Condition::FidelityCondition(atof(argv[++i])));
+		}
+		// --------------------------------------------------
+		else if (i < argc && !strcmp(argv[i], "-layout=azerty"))
+		{
+			Keyboard_setLayout(KeyActions::AZERTY());
+		}
+		else if (i < argc && !strcmp(argv[i], "-layout=qwerty"))
+		{
+			Keyboard_setLayout(KeyActions::QWERTY());
 		}
 		// --------------------------------------------------
 		else
@@ -101,36 +108,23 @@ int main(int argc, char* argv[])
 	
 	
 	
+	if (limitations.empty())
+		limitations.push_back(new Condition::FidelityCondition());
 	
-	
-	Generator::Generator* gen;
+	Generator::Generator* generator;
 	#ifdef OPENCV
-	if (path.empty())	gen		= new Generator::Sinus(10., scale, height);
-	else							gen		= new Generator::HeightMap(path, scale, height);
+	if (path.empty())	generator		= new Generator::Sinus(10., scale, height);
+	else							generator		= new Generator::HeightMap(path, scale, height);
 	#else
 	if (!path.empty()) printf("[ERROR] Couldn't load image, OpenCV module isn't compiled\n");
-	gen		= new Generator::Sinus(scale);
+	generator		= new Generator::Sinus(scale);
 	#endif
-	
-	Condition::Condition* cond;
-	switch (conditionType)
-	{
-		case 0:
-			cond = new Condition::NumberCondition(triangleNumber);
-			break;
-		case 1:
-			cond = new Condition::FidelityCondition(precision);
-			break;
-		default:
-			cond = new Condition::FidelityCondition();
-			break;
-	}
 	
 	Palette::Palette* tone;
 	if (color)				tone	= new Palette::Color(height);
 	else							tone	= new Palette::BW(height);
 	
-	vec3 camera = 	.5 * gen->base(3); 
+	vec3 camera = 	.5 * generator->base(3); 
 	
 	
 	
@@ -144,7 +138,7 @@ int main(int argc, char* argv[])
 	printf("Computing points ... ");
 	fflush(stdout);
 	
-	Triangulation* mesh = new Triangulation(vertexNumber, *gen);
+	Geometry::Triangulation* mesh = new Geometry::Triangulation(vertexNumber, *generator);
 	
 	gettimeofday(&t, NULL);
 	timeend = t.tv_sec + (t.tv_usec/1000000.0);
@@ -155,7 +149,7 @@ int main(int argc, char* argv[])
 	printf("Computing triangulation ... ");
 	fflush(stdout);
 	
-	mesh->triangulate(*cond);
+	mesh->triangulate(limitations);
 	
 	gettimeofday(&t, NULL);
 	timeend = t.tv_sec + (t.tv_usec/1000000.0);
@@ -167,9 +161,8 @@ int main(int argc, char* argv[])
 	Init(argc, argv, 1600, 900);
 	SetMesh(*mesh, *tone, camera);
 
-	delete gen;
+	delete generator;
 	delete mesh;
-	delete cond;
 	delete tone;
 
 	glutMainLoop();

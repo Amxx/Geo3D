@@ -17,5 +17,6 @@
 *.idx
 *.log
 
-OBJ/Geo3D
-Geo3D
+DOCS/
+OBJS/
+Delaunay
