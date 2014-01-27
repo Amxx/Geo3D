@@ -1,12 +1,12 @@
-CC =     g++
-CFLAGS = -g -Wall -O3
-LFLAGS = -lglut -lGL -lGLU -lm
+CC =     	g++
+CFLAGS =	-g -Wall -O3
+LFLAGS =	-lglut -lGL -lGLU -lm
 
 
 
 GCC_VERSION_GE_47 = $(shell g++ -dumpversion | awk '{print $$1>=4.7?"1":"0"}')
 ifeq ($(GCC_VERSION_GE_47),1)
-# 	CFLAGS += -std=c++11 -DCPP11
+ 	CFLAGS += -std=c++11 -DCPP11
 endif
 
 CFLAGS += -DOPENCV
@@ -18,11 +18,15 @@ LFLAGS += -lopencv_core -lopencv_highgui
 ifneq ($(strip $(shell $(CC) -v 2>&1 | grep -i "Apple")),)
 	GL_LIBDIRS =	-L. -L/usr/X11/lib -L/usr/local/lib -L"/System/Library/Frameworks/OpenGL.framework/Libraries" -framework GLUT -framework OpenGL
 	GL_INCLUDE =	-I/usr/X11/include
+	BROWSER =			safari
+	VIEWER =			
 endif
 # ============ LINUX ============================================================
 ifneq ($(strip $(shell $(CC) -v 2>&1 | grep -i "Linux")),)
 	GL_LIBDIRS =
-	GL_INCLUDE =   -I. -I/usr/include
+	GL_INCLUDE =  -I. -I/usr/include
+	BROWSER =			firefox
+	VIEWER =			evince
 endif
 # ===============================================================================
 
@@ -36,12 +40,12 @@ EXEC = Delaunay
 
 
 
-.PHONY: all clean clear dox
+.PHONY: all clean clear doc opendoc rapport openrapport
 
-all: mkdir build
+all: mkdir build doc rapport
 
 mkdir :
-	mkdir -p OBJS/geometry OBJS/structure OBJS/tools
+	mkdir -p OBJS/geometry OBJS/structure OBJS/tools OBJS/pdf
 
 build: $(OBJ)
 	$(CC) $(LFLAGS) $(GL_LIBDIRS) -o OBJS/$(EXEC) $^
@@ -51,15 +55,21 @@ $(OBJ): OBJS/%.o : SRC/%.cc $(HEA) makefile
 	$(CC) $(CFLAGS) $(GL_INCLUDE) -c $< -o $@
 
 clean:
-	rm -r $(OBJ)
+	rm -rf $(OBJ)
 
 clear: clean
-	rm -r OBJS/$(EXEC) $(EXEC)
+	rm -rf OBJS/$(EXEC) OBJS/pdf DOCS/ $(EXEC) Rapport.pdf
 
 
-################################################################################
-# Generate doxygen documentation of file two.c using command file two.dox.
 doc: $(HEA)
 	doxygen SRC/delaunay.dox
-#
 
+opendoc: doc
+	$(BROWSER) DOCS/html/index.html 
+	
+rapport: mkdir RAPPORT/Rapport.tex
+	cd RAPPORT && pdflatex -output-directory=../OBJS/pdf/ Rapport.tex 
+	ln -s -f OBJS/pdf/Rapport.pdf .
+
+openrapport: rapport
+	$(VIEWER) OBJS/pdf/Rapport.pdf

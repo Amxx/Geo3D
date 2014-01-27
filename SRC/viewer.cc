@@ -80,7 +80,7 @@ void SetMesh(const Geometry::Triangulation& mesh, const Palette::Palette& tone, 
 	glNewList(surface, GL_COMPILE);
 	glBegin(GL_TRIANGLES);
 	#ifdef CPP11
-	for (Face* face : mesh.m_faces)
+	for (Geometry::Face* face : mesh.m_faces)
 	{
 		glColorVec3(tone(face->vertex(0)->y()));	glVertexVec3D(*face->vertex(0));
 		glColorVec3(tone(face->vertex(1)->y()));	glVertexVec3D(*face->vertex(1));
@@ -100,7 +100,7 @@ void SetMesh(const Geometry::Triangulation& mesh, const Palette::Palette& tone, 
 	maillage2D = glGenLists(1);
 	glNewList(maillage2D, GL_COMPILE);
 	#ifdef CPP11
-	for (Face* face : mesh.m_faces)
+	for (Geometry::Face* face : mesh.m_faces)
 	{
 		glBegin(GL_LINE_LOOP);
 		glColorVec3(tone(face->vertex(0)->y()));	glVertexVec2D(*face->vertex(0));
@@ -123,7 +123,7 @@ void SetMesh(const Geometry::Triangulation& mesh, const Palette::Palette& tone, 
 	maillage3D = glGenLists(1);
 	glNewList(maillage3D, GL_COMPILE);
 	#ifdef CPP11
-	for (Face* face : mesh.m_faces)
+	for (Geometry::Face* face : mesh.m_faces)
 	{
 		glBegin(GL_LINE_LOOP);
 		glColorVec3(tone(face->vertex(0)->y()));	glVertexVec3D(*face->vertex(0));
@@ -147,7 +147,7 @@ void SetMesh(const Geometry::Triangulation& mesh, const Palette::Palette& tone, 
 	glNewList(points, GL_COMPILE);
 	glBegin(GL_POINTS);
 	#ifdef CPP11
-	for (Vertex* vertex : mesh.m_vertices)
+	for (Geometry::Vertex* vertex : mesh.m_vertices)
 	{
 		glColorVec3(tone(vertex->y()));
 		glVertexVec3D(*vertex);

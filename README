@@ -1,0 +1,38 @@
+######################################################################
+#                              Delaunay                              #
+######################################################################
+
+1. Compilation et dependances
+
+	La compilation du programme se fait a l'aide de l'outil makefile.
+	Cela genere les fichiers binaires dans un sous dossier OBJS/ ainsi
+	qu'un lien (Delaunay) vers l'executable.
+	
+	Pour profiter de toutes les options, il est necessaire d'avoir openCV
+	pour la lecture d'images en niveaux de gris.
+	En l'absence d'openCV il est possible de compiler quand meme le projet 
+	en commentant les lignes 12 et 13 du makefile.
+	
+	De plus, le makefile utilise awk pour determiner la version courante
+	de gcc. En l'absence de awk, il faudra commenter les lignes 7 à 10 du
+	makefile.
+	
+2. Lancement et options
+
+	Une fois le programme compilé, le lancement se fait par la commande
+	>> ./Delaunay
+	
+	Pour plus d'options, une aide est disponible via la commande
+	>> ./Delaunay -help
+	
+	Exemple de commandes :
+	>> ./Delaunay -input DATA/world/mt-taranaki.png -height 2 -truecolors
+	>> ./Delaunay -input DATA/world/uk.png					-truecolors -height 0.2
+	>> ./Delaunay -input DATA/world/world.jpg				-height 0.2 -n 1000000 -stop=triangle 100000
+	
+3. Documentation
+	
+	La documentation doxigene peut etre generé et affiché via la commande
+	>> make opendoc
+
+4. Rapport
