@@ -26,9 +26,9 @@
 	>> ./Delaunay -help
 	
 	Exemple de commandes :
-	>> ./Delaunay -input DATA/world/mt-taranaki.png -height 2 -truecolors
-	>> ./Delaunay -input DATA/world/uk.png					-truecolors -height 0.2
-	>> ./Delaunay -input DATA/world/world.jpg				-height 0.2 -n 1000000 -stop=triangle 100000
+	>> ./Delaunay -input DATA/world/mt-taranaki.png -height 2   -truecolors 
+	>> ./Delaunay -input DATA/world/uk.png          -truecolors -height 0.2 
+	>> ./Delaunay -input DATA/world/world.jpg       -height 0.2 -n 1000000  -stop=triangle 100000
 	
 3. Documentation
 	

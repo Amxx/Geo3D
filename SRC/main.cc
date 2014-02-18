@@ -30,34 +30,37 @@ int main(int argc, char* argv[])
 	int																	vertexNumber		= 100000;
 	double															scale						=	10.;
 	double															height					= 1.;
+	int																	generatorID			= 0;
 	std::string													path						= "";
 	bool																color						= false;
 	
-	Condition::Condition_set						limitations;
 	
-
+	Condition::Condition_set						limitations;
 	
 	for (int i = 1; i<argc; ++i)	
 	{
 
 		if (i < argc && !strcmp(argv[i], "-help"))
 		{
-			printf("=============== Geo3D - A simple terrain viewer ===============\n");
-			printf("Usage: %s [options]                                            \n", argv[0]);
-			printf("    -truecolors              Affichage en couleurs reelles     \n");
-			printf("  generation de points :                                       \n");
-			printf("    -n <int>                 Nombre de points a cree           \n");
-			printf("    -scale <float>           Taille de la zone de tracé        \n");
-			printf("    -height <float>          Hauteur de la zone de tracé       \n");
-			printf("    -input <path>            Path to greyscale image used      \n");
-			printf("                             to generate the points            \n");
-			printf("  conditions d'arret :                                         \n");
-			printf("    -stop=triangle <int>     Nombre de triangle a construire   \n");
-			printf("    -stop=precision <float>  Precision a atteinder (ecart max) \n");
-			printf("                                                               \n");
-			printf("  compatibilité :                                              \n");
-			printf("    -layout=[azerty|qwerty]  Disposition clavier               \n");
-			printf("===============================================================\n");
+			printf("================== Geo3D - A simple terrain viewer ==================\n");
+			printf("Usage: %s [options]                                                  \n", argv[0]);
+			printf("    -truecolors              	    Affichage en couleurs reelles      \n");
+			printf("  generation de points :                                             \n");
+			printf("    -generator=sinus                                                 \n");
+			printf("    -generator=rand                                                  \n");
+			printf("    -generator=greyscale <path>   Path to greyscale image used       \n");
+			printf("                                	to generate the points             \n");
+			printf("    -n <int>                      Nombre de points a cree            \n");
+			printf("    -scale <float>                Taille de la zone de tracé         \n");
+			printf("    -height <float>               Hauteur de la zone de tracé        \n");
+			printf("                                                                     \n");
+			printf("  conditions d'arret :                                               \n");
+			printf("    -stop=triangle <int>          Nombre de triangle a construire    \n");
+			printf("    -stop=precision <float>       Precision a atteinder (ecart max)  \n");
+			printf("                                                                     \n");
+			printf("  compatibilité :                                                    \n");
+			printf("    -layout=[azerty|qwerty]       Disposition clavier                \n");
+			printf("=====================================================================\n");
 			return 0;
 		}
 		// --------------------------------------------------
@@ -78,8 +81,18 @@ int main(int argc, char* argv[])
 		{
 			height = atof(argv[++i]);
 		}
-		else if (i+1 < argc && !strcmp(argv[i], "-input"))
+		// --------------------------------------------------
+		else if (i < argc && !strcmp(argv[i], "-generator=sinus"))
 		{
+			generatorID = 0;
+		}
+		else if (i < argc && !strcmp(argv[i], "-generator=random"))
+		{
+			generatorID = 1;
+		}
+		else if (i+1 < argc && !strcmp(argv[i], "-generator=greyscale"))
+		{
+			generatorID = 2;
 			path = argv[++i];
 		}
 		// --------------------------------------------------
@@ -112,13 +125,25 @@ int main(int argc, char* argv[])
 		limitations.push_back(new Condition::FidelityCondition());
 	
 	Generator::Generator* generator;
-	#ifdef OPENCV
-	if (path.empty())	generator		= new Generator::Sinus(10., scale, height);
-	else							generator		= new Generator::HeightMap(path, scale, height);
-	#else
-	if (!path.empty()) printf("[ERROR] Couldn't load image, OpenCV module isn't compiled\n");
-	generator		= new Generator::Sinus(scale);
-	#endif
+	switch (generatorID)
+	{
+		case 1:
+			generator = new Generator::Random(scale, height);
+			break;
+		case 2:
+			#ifdef OPENCV
+			if (!path.empty())
+				generator		= new Generator::HeightMap(path, scale, height);
+			else
+				generator		= new Generator::Sinus(10., scale, height);
+			break;
+			#else
+			if (!path.empty()) printf("[ERROR] Couldn't load image, OpenCV module isn't compiled\n");
+			#endif
+		default:
+			generator = new Generator::Sinus(10., scale, height);
+			break;
+	}
 	
 	Palette::Palette* tone;
 	if (color)				tone	= new Palette::Color(height);
