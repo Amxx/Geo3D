@@ -11,7 +11,8 @@ vec3 Random::base	(int idx)	const
 {
 	double x = (idx & 1)?1.:0.;
 	double z = (idx & 2)?1.:0.;
-	double y = drand48();
+	double y = 0;
+	//double y = drand48();
 	return vec3(x*m_scale, y*m_height, z*m_scale);
 }
 vec3 Random::operator() () const
