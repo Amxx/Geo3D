@@ -47,7 +47,7 @@ int main(int argc, char* argv[])
 			printf("    -truecolors              	    Affichage en couleurs reelles      \n");
 			printf("  generation de points :                                             \n");
 			printf("    -generator=sinus                                                 \n");
-			printf("    -generator=rand                                                  \n");
+			printf("    -generator=random                                                \n");
 			printf("    -generator=greyscale <path>   Path to greyscale image used       \n");
 			printf("                                	to generate the points             \n");
 			printf("    -n <int>                      Nombre de points a cree            \n");
