@@ -44,7 +44,7 @@ int main(int argc, char* argv[])
 		{
 			printf("================== Geo3D - A simple terrain viewer ==================\n");
 			printf("Usage: %s [options]                                                  \n", argv[0]);
-			printf("    -truecolors              	    Affichage en couleurs reelles      \n");
+			printf("    -truecolors                   Affichage en couleurs reelles      \n");
 			printf("  generation de points :                                             \n");
 			printf("    -generator=sinus                                                 \n");
 			printf("    -generator=random                                                \n");
